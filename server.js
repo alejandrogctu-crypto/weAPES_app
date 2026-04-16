@@ -91,8 +91,32 @@ SUBPROYECTOS ACTIVOS:
 - SG4 Campamentos → Ángel + Flavio + Jesús + Pinky | Temporada verano
 - SG5 Constitución Cooperativa → Jesús + Berenice Soto | Acta al 90%
 
+DEUDA CLIENTES PENDIENTE DE COBRO (al 16 abril 2026):
+- Roberto Elian Gómez Ramos — $1,650 (1 mes)
+- David Ramón Rodríguez — $6,233 (8 meses de anualidad)
+- Humberto Javier de la Rosa — $1,100 (2 meses adultos)
+- Daniel Abdias Reyes Estrada — $1,475 (3 meses adultos)
+- Alejandra Estefanía Garza — $983 (2 meses adultos)
+- TOTAL DEUDA CLIENTES: $11,442 — Responsable cobro: Jesús
+
+DEUDA DEL GYM A EQUIPO (al 16 abril 2026):
+- Adrián Pantoja: $12,560 (nómina dic–abr + Consejo Técnico + campamentos) — 🔴 URGENTE liquidar antes del 30 abril
+- Ángel Gutiérrez: $12,230 (nómina dic–abr + Consejo Técnico + Easter Camp pendiente)
+- TOTAL DEUDA EQUIPO: $36,232 (pendiente definir otros integrantes)
+
+TABLA DE COMPENSACIONES — EMPLEADO RECEPCIÓN/VENTAS (Jesús):
+- Salario base: 23 hrs/semana × $60/hr = $5,520/mes
+- Horario: Lun–Jue 3:15–8:15pm + Vie 3:15–6:15pm
+- Bonos por desempeño:
+  · Cumplimiento recepción: +15% ($828/mes)
+  · Cumplimiento limpieza: +15% ($828/mes)
+  · Ventas membresías > $45,000: +20% ($1,104/mes)
+  · Ventas membresías > $55,000: +20% adicional
+  · Ventas membresías > $68,000: +30% adicional
+- Salario máximo con todos los bonos: $11,040/mes
+
 ESTADO SEMANA 3 ABRIL 2026 (14–20 Abr):
-- Cobranza al día ✓
+- Cobranza al día ✓ (pero ver DEUDA CLIENTES arriba — $11,442 pendiente)
 - 6/6 membresías reactivadas ✓
 - MercadoPago en configuración (Flavio) — recomendación: MercadoPago (2.9%) vs Clip (3.5%)
 - Fiestas Infantiles: paquete comercial listo ✓ (Básico $3,500 / Plus $5,800 / Premium $9,200)
@@ -175,6 +199,24 @@ ARCHIVOS DE REFERENCIA (en disco, úsalos como contexto):
 - Cotizador.xlsx → cotizador general de servicios
 - EXPLOSION OBSTACULOS WE APES.xlsx → costos de fabricación de obstáculos (venta/equipamiento)
 - Nezaldi Gastos Reales.xlsx → gastos reales del proyecto Instituto Nezaldi (Woodspa)
+
+DEUDAS ACTIVAS (al 16 abril 2026 — archivo: Deuda Revision.xlsx):
+
+Deuda clientes → weAPES ($11,442 total):
+- Roberto Elian Gómez: $1,650 | David Ramón Rodríguez: $6,233 | Humberto de la Rosa: $1,100
+- Daniel Reyes Estrada: $1,475 | Alejandra Garza: $983
+- Responsable cobro: Jesús — acción urgente en David Rodríguez ($6,233, 8 meses)
+
+Deuda weAPES → equipo ($36,232 total):
+- Adrián Pantoja: $12,560 — 🔴 liquidar antes del 30 abril (nómina + campamentos + Consejo Técnico)
+  · Dic $3,200 · Ene $2,000 · Feb $2,000 · Mar $2,000 · Abr $1,000 + campamentos + CT pendientes
+- Ángel Gutiérrez: $12,230 — nómina + Easter Camp $3,300 + Consejo Técnico $1,000
+  · Dic $2,000 · Ene $3,100 · Feb $500 · Mar $2,000 · Abr $1,000 + pendientes
+
+ESTRUCTURA SALARIAL — RECEPCIÓN/VENTAS (Jesús):
+- Base: $5,520/mes (23 hrs/sem × $60/hr)
+- Techo con bonos: $11,040/mes
+- Bonos: recepción +15%, limpieza +15%, ventas >$45k +20%, >$55k +20%, >$68k +30%
 
 WEAPES — DATOS FINANCIEROS REALES 2026 (del CSV de pagos):
 - Enero: $77,338 MXN
