@@ -104,16 +104,23 @@ DEUDA DEL GYM A EQUIPO (al 16 abril 2026):
 - Ángel Gutiérrez: $12,230 (nómina dic–abr + Consejo Técnico + Easter Camp pendiente)
 - TOTAL DEUDA EQUIPO: $36,232 (pendiente definir otros integrantes)
 
-TABLA DE COMPENSACIONES — EMPLEADO RECEPCIÓN/VENTAS (Jesús):
-- Salario base: 23 hrs/semana × $60/hr = $5,520/mes
-- Horario: Lun–Jue 3:15–8:15pm + Vie 3:15–6:15pm
-- Bonos por desempeño:
-  · Cumplimiento recepción: +15% ($828/mes)
-  · Cumplimiento limpieza: +15% ($828/mes)
-  · Ventas membresías > $45,000: +20% ($1,104/mes)
-  · Ventas membresías > $55,000: +20% adicional
-  · Ventas membresías > $68,000: +30% adicional
-- Salario máximo con todos los bonos: $11,040/mes
+TABLA DE COMPENSACIONES — JESÚS (en negociación, abril 2026):
+Horario: Lun–Jue 3:30–8:15pm + Vie 3:30–6:15pm → 23 hrs/semana
+Salario base: $60/hr × 23 hrs = $5,520/mes
+
+PROPUESTA FLAVIO (original):
+- Cumplimiento recepción: +15% ($828/mes)
+- Cumplimiento limpieza: +15% ($828/mes)
+- Ventas > $45,000: +20% | > $55,000: +20% | > $68,000: +30%
+- Techo total: $11,040/mes
+
+CONTRAPROPUESTA JESÚS:
+- Cumplimiento administración: +10% ($552/mes)
+- Cumplimiento atención al cliente: +10% ($552/mes)
+- Subtotal fijo: $6,624/mes
+- Ventas > $78,000: +25% ($1,380/mes) | > $90,000: +35% ($1,932/mes) | > $110,000: +45% ($2,484/mes)
+- Techo total con todos los bonos: $12,420/mes
+- ESTADO: pendiente de resolución por Pinky — diferencia principal: umbrales de venta más altos y techo $1,380 mayor
 
 ESTADO SEMANA 3 ABRIL 2026 (14–20 Abr):
 - Cobranza al día ✓ (pero ver DEUDA CLIENTES arriba — $11,442 pendiente)
@@ -213,10 +220,12 @@ Deuda weAPES → equipo ($36,232 total):
 - Ángel Gutiérrez: $12,230 — nómina + Easter Camp $3,300 + Consejo Técnico $1,000
   · Dic $2,000 · Ene $3,100 · Feb $500 · Mar $2,000 · Abr $1,000 + pendientes
 
-ESTRUCTURA SALARIAL — RECEPCIÓN/VENTAS (Jesús):
+ESTRUCTURA SALARIAL — JESÚS (negociación activa, abril 2026):
 - Base: $5,520/mes (23 hrs/sem × $60/hr)
-- Techo con bonos: $11,040/mes
-- Bonos: recepción +15%, limpieza +15%, ventas >$45k +20%, >$55k +20%, >$68k +30%
+- Propuesta Flavio → techo $11,040/mes | bonos: recepción 15%, limpieza 15%, ventas >$45k/55k/68k
+- Contrapropuesta Jesús → techo $12,420/mes | bonos: admin 10%, atención 10%, ventas >$78k/90k/110k (umbrales más altos, bono mayor)
+- Diferencia: +$1,380/mes techo, umbrales de venta Jesús exigen ingresos 14–62% más altos para activar bonos
+- PENDIENTE: Pinky debe resolver qué propuesta acepta
 
 WEAPES — DATOS FINANCIEROS REALES 2026 (del CSV de pagos):
 - Enero: $77,338 MXN
