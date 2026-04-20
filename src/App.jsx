@@ -12,9 +12,11 @@ const AGENTS = [
   {
     id: "orchestrator",
     name: "Orquestador Maestro",
+    chatName: "Orquestador",
     subtitle: "Coordinador Central",
     emoji: "🧠",
     colorKey: "purple",
+    company: "shared",
     status: "working",
     currentFocus: "Semana 3 activa — Supervisando fiestas infantiles, cooperativa y criterio de locación",
     folder: null,
@@ -36,9 +38,11 @@ const AGENTS = [
   {
     id: "gym",
     name: "Agente Gym PM",
+    chatName: "Gym PM",
     subtitle: "weAPES Parkour Center",
     emoji: "🏃",
     colorKey: "emerald",
+    company: "weapes",
     status: "working",
     currentFocus: "Semana 3 activa — Capacitación maestros, catálogo digital y Baby Parkour en curso",
     folder: {
@@ -110,9 +114,11 @@ const AGENTS = [
   {
     id: "ventas",
     name: "Agente CEO / Ventas",
+    chatName: "CEO / Ventas",
     subtitle: "Woodspa — Muebles & Diseño Interior",
     emoji: "🪑",
     colorKey: "amber",
+    company: "woodspa",
     status: "working",
     currentFocus: "Seguimiento Clínica Reforma + 2 prospectos nuevos esta semana",
     folder: {
@@ -188,9 +194,11 @@ const AGENTS = [
   {
     id: "procesos",
     name: "Agente Procesos",
+    chatName: "Procesos",
     subtitle: "Mejora Continua Cross-Área",
     emoji: "⚙️",
     colorKey: "blue",
+    company: "weapes",
     status: "idle",
     currentFocus: "SOPs entregados — esperando feedback para automatizar cobros",
     folder: null,
@@ -213,9 +221,11 @@ const AGENTS = [
   {
     id: "finanzas",
     name: "Agente Finanzas",
+    chatName: "Finanzas",
     subtitle: "Control Financiero Cross-Área",
     emoji: "📊",
     colorKey: "cyan",
+    company: "weapes",
     status: "idle",
     currentFocus: "Listo para análisis — conecta BD FINANCIERO y pipeline Woodspa",
     folder: {
@@ -276,6 +286,56 @@ const AGENTS = [
       kpis: ["Ingresos por clase promedio ($)", "% cobranza al corriente", "Ticket promedio Woodspa ($)", "Margen bruto por proyecto (%)"],
     },
   },
+  {
+    id: "parkourDesign",
+    name: "Diseño Parkour",
+    chatName: "Diseño Parkour",
+    subtitle: "Espacios & Volúmenes weAPES",
+    emoji: "🏗️",
+    colorKey: "rose",
+    company: "weapes",
+    status: "idle",
+    currentFocus: "Listo para diseñar — describe el espacio y los obstáculos que necesitas",
+    folder: null,
+    brief: {
+      mision: "Diseñar espacios paramétricos para parkour y freerunning alineados a la identidad weAPES, generando scripts Blender listos para visualizar.",
+      responsabilidades: [
+        "Proponer distribución de obstáculos (cajones, paredes, rails)",
+        "Generar scripts Python para Blender con colores weAPES",
+        "Respetar clearances de seguridad parkour",
+        "Investigar precedentes y normativa de instalaciones",
+        "Estimar materiales por zona",
+      ],
+      inputs: ["Dimensiones del espacio", "Tipo de zona (libre, precisión, freerunning)", "Cantidad y tipo de obstáculos", "Restricciones de presupuesto"],
+      outputs: ["Script Blender (.py) con escena 3D lista", "Lista de obstáculos con dimensiones", "Estimado de materiales"],
+      kpis: ["Scripts generados por sesión", "Claridad de brief de diseño", "Adherencia a identidad weAPES"],
+    },
+  },
+  {
+    id: "clinicDesign",
+    name: "Diseño Clínicas",
+    chatName: "Diseño Clínicas",
+    subtitle: "Interiorismo & Mobiliario Woodspa",
+    emoji: "🏥",
+    colorKey: "teal",
+    company: "woodspa",
+    status: "idle",
+    currentFocus: "Listo para diseñar — describe el tipo de clínica y dimensiones del espacio",
+    folder: null,
+    brief: {
+      mision: "Diseñar interiores de consultorios médicos con mobiliario Woodspa, generando propuestas visuales en Blender y cotizaciones automáticas.",
+      responsabilidades: [
+        "Seleccionar mobiliario del catálogo Woodspa según tipo de clínica",
+        "Generar scripts Python para Blender con layout completo",
+        "Cotizar automáticamente con precios del catálogo",
+        "Recomendar distribución respetando normativa clínica",
+        "Calcular personalizados cuando el catálogo no cubre la necesidad",
+      ],
+      inputs: ["Tipo de clínica", "Dimensiones del consultorio", "Requerimientos especiales (lavabo, equipo, cajones con llave)"],
+      outputs: ["Script Blender (.py) con muebles posicionados", "Tabla de cotización con TOTAL", "Notas de personalización"],
+      kpis: ["Propuestas generadas", "Precisión de cotización vs precio final", "% proyectos cerrados sobre propuestas enviadas"],
+    },
+  },
 ];
 
 const INTERACTIONS = [
@@ -309,6 +369,8 @@ const C = {
   amber: { hex: "#d97706", hexLight: "#fef3c7", hexBorder: "#fcd34d" },
   blue: { hex: "#2563eb", hexLight: "#dbeafe", hexBorder: "#93c5fd" },
   cyan: { hex: "#0891b2", hexLight: "#cffafe", hexBorder: "#67e8f9" },
+  rose: { hex: "#9D4EDD", hexLight: "#f3e8ff", hexBorder: "#d8b4fe" },
+  teal: { hex: "#00897b", hexLight: "#e0f2f1", hexBorder: "#80cbc4" },
 };
 
 const MSG = {
@@ -786,12 +848,12 @@ function Desk3D({ position, w = 1.8, d = 1.1, color, isActive, status, selected,
   );
 }
 
-function ChibiChar({ position, color, name, status, uid, pulse, selected, onClick }) {
+// ── VentasChibi — humano chibi solo para ventas (Woodspa) ──
+function VentasChibi({ position, color, name, status, uid, pulse, selected, onClick }) {
   const groupRef = useRef();
   const scfg = STATUS_CFG[status];
   const isActive = status === "working" || status === "alerta";
   const dark = hexShade(color, 0.55);
-  const pants = hexShade(color, 0.42);
   const skin = "#FDBCB4";
 
   useFrame((state) => {
@@ -807,19 +869,15 @@ function ChibiChar({ position, color, name, status, uid, pulse, selected, onClic
 
   return (
     <group ref={groupRef} position={position} onClick={onClick}>
-
-      {/* Status orb */}
       <mesh position={[0.44, 1.95, 0.1]}>
         <sphereGeometry args={[0.065, 8, 8]} />
         <meshStandardMaterial color={scfg.dot} emissive={scfg.dot} emissiveIntensity={isActive ? 1.2 : 0.4} />
       </mesh>
-
-      {/* LEGS — pants */}
       {[-1, 1].map((s) => (
         <group key={s}>
           <mesh position={[s * 0.14, 0.21, 0]} castShadow>
             <cylinderGeometry args={[0.096, 0.096, 0.38, 10]} />
-            <meshStandardMaterial color={pants} />
+            <meshStandardMaterial color={hexShade(color, 0.42)} />
           </mesh>
           <mesh position={[s * 0.15, 0.02, 0.1]} castShadow>
             <sphereGeometry args={[0.12, 10, 8]} />
@@ -827,19 +885,20 @@ function ChibiChar({ position, color, name, status, uid, pulse, selected, onClic
           </mesh>
         </group>
       ))}
-
-      {/* TORSO */}
       <mesh position={[0, 0.70, 0]} castShadow>
         <boxGeometry args={[0.52, 0.52, 0.38]} />
         <meshStandardMaterial color={color} roughness={0.55} />
       </mesh>
-      {/* Collar */}
-      <mesh position={[0, 0.90, 0.18]}>
-        <boxGeometry args={[0.16, 0.1, 0.04]} />
-        <meshStandardMaterial color="#f8fafc" />
+      {[-1, 1].map((s) => (
+        <mesh key={s} position={[s * 0.13, 0.82, 0.2]} rotation={[0, 0, s * 0.38]}>
+          <boxGeometry args={[0.1, 0.2, 0.03]} />
+          <meshStandardMaterial color={dark} />
+        </mesh>
+      ))}
+      <mesh position={[0, 0.70, 0.2]}>
+        <boxGeometry args={[0.065, 0.28, 0.03]} />
+        <meshStandardMaterial color="#dc2626" />
       </mesh>
-
-      {/* ARMS + HANDS */}
       {[-1, 1].map((s) => (
         <group key={s}>
           <mesh position={[s * 0.36, 0.67, 0]} rotation={[0, 0, s * 0.3]} castShadow>
@@ -852,22 +911,16 @@ function ChibiChar({ position, color, name, status, uid, pulse, selected, onClic
           </mesh>
         </group>
       ))}
-
-      {/* HEAD — bigger chibi */}
       <mesh position={[0, 1.32, 0]} castShadow>
         <sphereGeometry args={[0.37, 16, 14]} />
         <meshStandardMaterial color={skin} roughness={0.72} />
       </mesh>
-
-      {/* Cheeks */}
       {[-1, 1].map((s) => (
         <mesh key={s} position={[s * 0.26, 1.24, 0.3]}>
           <sphereGeometry args={[0.1, 8, 6]} />
           <meshStandardMaterial color="#ffaaaa" transparent opacity={0.5} />
         </mesh>
       ))}
-
-      {/* Eyes */}
       {[[-0.14, 1.36, 0.34], [0.14, 1.36, 0.34]].map(([ex, ey, ez], i) => (
         <group key={i}>
           <mesh position={[ex, ey, ez]}>
@@ -878,147 +931,16 @@ function ChibiChar({ position, color, name, status, uid, pulse, selected, onClic
             <sphereGeometry args={[0.05, 8, 8]} />
             <meshStandardMaterial color="#0f0700" />
           </mesh>
-          <mesh position={[ex + (i === 0 ? 0.032 : -0.018), ey + 0.022, ez + 0.082]}>
-            <sphereGeometry args={[0.019, 6, 6]} />
-            <meshStandardMaterial color="white" />
-          </mesh>
         </group>
       ))}
-
-      {/* Smile */}
       <mesh position={[0, 1.18, 0.36]} rotation={[0.1, 0, 0]}>
         <torusGeometry args={[0.07, 0.015, 6, 14, Math.PI]} />
         <meshStandardMaterial color="#c07060" />
       </mesh>
-
-      {/* HAIR */}
       <mesh position={[0, 1.51, -0.06]} castShadow>
         <sphereGeometry args={[0.34, 12, 10]} />
         <meshStandardMaterial color={color} roughness={0.65} />
       </mesh>
-      <mesh position={[0.1, 1.67, 0.23]} rotation={[0.55, 0.3, 0]}>
-        <sphereGeometry args={[0.145, 8, 6]} />
-        <meshStandardMaterial color={color} />
-      </mesh>
-      <mesh position={[-0.31, 1.35, 0.06]}>
-        <sphereGeometry args={[0.105, 8, 6]} />
-        <meshStandardMaterial color={color} />
-      </mesh>
-
-      {/* ── ACCESSORIES ── */}
-
-      {/* ORCHESTRATOR — crown with gems */}
-      {uid === "orchestrator" && (
-        <group position={[0, 1.69, 0]}>
-          <mesh>
-            <cylinderGeometry args={[0.28, 0.24, 0.11, 16]} />
-            <meshStandardMaterial color="#fbbf24" metalness={0.78} roughness={0.14} />
-          </mesh>
-          {[0, 72, 144, 216, 288].map((deg, i) => (
-            <mesh key={i} position={[Math.cos(deg * Math.PI / 180) * 0.22, 0.16, Math.sin(deg * Math.PI / 180) * 0.22]}>
-              <coneGeometry args={[0.062, 0.21, 6]} />
-              <meshStandardMaterial color="#fbbf24" metalness={0.78} roughness={0.14} />
-            </mesh>
-          ))}
-          {[0, 120, 240].map((deg, i) => (
-            <mesh key={i} position={[Math.cos(deg * Math.PI / 180) * 0.22, 0.065, Math.sin(deg * Math.PI / 180) * 0.22]}>
-              <sphereGeometry args={[0.037, 6, 6]} />
-              <meshStandardMaterial color={["#ef4444","#3b82f6","#22c55e"][i]} emissive={["#ef4444","#3b82f6","#22c55e"][i]} emissiveIntensity={0.7} />
-            </mesh>
-          ))}
-        </group>
-      )}
-
-      {/* GYM — red headband + arm band */}
-      {uid === "gym" && (
-        <>
-          <mesh position={[0, 1.56, 0.08]} rotation={[0.15, 0, 0]}>
-            <torusGeometry args={[0.33, 0.052, 8, 32]} />
-            <meshStandardMaterial color="#ea5653" />
-          </mesh>
-          <mesh position={[0.44, 0.66, 0]} rotation={[0, 0, 0.3]}>
-            <cylinderGeometry args={[0.093, 0.093, 0.082, 10]} />
-            <meshStandardMaterial color="#ea5653" />
-          </mesh>
-        </>
-      )}
-
-      {/* VENTAS — suit lapels + tie */}
-      {uid === "ventas" && (
-        <>
-          {[-1, 1].map((s) => (
-            <mesh key={s} position={[s * 0.13, 0.82, 0.2]} rotation={[0, 0, s * 0.38]}>
-              <boxGeometry args={[0.1, 0.2, 0.03]} />
-              <meshStandardMaterial color={dark} />
-            </mesh>
-          ))}
-          <mesh position={[0, 0.70, 0.2]}>
-            <boxGeometry args={[0.065, 0.28, 0.03]} />
-            <meshStandardMaterial color="#dc2626" />
-          </mesh>
-          <mesh position={[0, 0.87, 0.2]}>
-            <boxGeometry args={[0.1, 0.08, 0.03]} />
-            <meshStandardMaterial color="#b91c1c" />
-          </mesh>
-        </>
-      )}
-
-      {/* PROCESOS — hard hat + wrench */}
-      {uid === "procesos" && (
-        <>
-          <mesh position={[0, 1.67, 0]}>
-            <sphereGeometry args={[0.29, 12, 8, 0, Math.PI * 2, 0, Math.PI * 0.52]} />
-            <meshStandardMaterial color="#fbbf24" roughness={0.4} />
-          </mesh>
-          <mesh position={[0, 1.62, 0]}>
-            <cylinderGeometry args={[0.33, 0.33, 0.04, 16]} />
-            <meshStandardMaterial color="#f59e0b" roughness={0.4} />
-          </mesh>
-          <mesh position={[0.47, 0.46, 0.08]} rotation={[0.3, 0, -0.5]}>
-            <cylinderGeometry args={[0.032, 0.032, 0.32, 8]} />
-            <meshStandardMaterial color="#94a3b8" metalness={0.6} roughness={0.3} />
-          </mesh>
-          <mesh position={[0.47, 0.61, 0.08]} rotation={[0.3, 0, -0.5]}>
-            <boxGeometry args={[0.13, 0.07, 0.07]} />
-            <meshStandardMaterial color="#94a3b8" metalness={0.6} roughness={0.3} />
-          </mesh>
-        </>
-      )}
-
-      {/* FINANZAS — glasses + floating mini chart */}
-      {uid === "finanzas" && (
-        <>
-          <group position={[0, 1.35, 0.39]}>
-            {[-0.12, 0.12].map((lx) => (
-              <mesh key={lx} position={[lx, 0, 0]} rotation={[Math.PI / 2, 0, 0]}>
-                <torusGeometry args={[0.087, 0.022, 8, 20]} />
-                <meshStandardMaterial color="#1c1210" />
-              </mesh>
-            ))}
-            <mesh>
-              <boxGeometry args={[0.046, 0.022, 0.012]} />
-              <meshStandardMaterial color="#1c1210" />
-            </mesh>
-            {[-0.12, 0.12].map((lx) => (
-              <mesh key={lx + "l"} position={[lx, 0, -0.01]} rotation={[Math.PI / 2, 0, 0]}>
-                <circleGeometry args={[0.078, 12]} />
-                <meshStandardMaterial color="#bae6fd" transparent opacity={0.35} />
-              </mesh>
-            ))}
-          </group>
-          {/* Floating bar chart */}
-          <group position={[0.52, 2.0, 0]}>
-            {[[0, 0.09], [0.07, 0.15], [0.14, 0.07]].map(([bx, bh], i) => (
-              <mesh key={i} position={[bx, bh / 2, 0]}>
-                <boxGeometry args={[0.05, bh, 0.05]} />
-                <meshStandardMaterial color={i === 1 ? "#0891b2" : "#67e8f9"} emissive={i === 1 ? "#0891b2" : "#67e8f9"} emissiveIntensity={0.5} />
-              </mesh>
-            ))}
-          </group>
-        </>
-      )}
-
-      {/* Floating name */}
       <Text position={[0, 2.1, 0]} fontSize={0.16} color="#1e293b"
         anchorX="center" anchorY="bottom" outlineWidth={0.012} outlineColor="white">
         {name}
@@ -1027,12 +949,646 @@ function ChibiChar({ position, color, name, status, uid, pulse, selected, onClic
   );
 }
 
+// ── PrimateChar — agentes weAPES como primates animados estilo cartoon ──
+function ChibiChar({ position, color, name, status, uid, pulse, selected, onClick }) {
+  const groupRef  = useRef();
+  const tailRef   = useRef();
+  const scfg      = STATUS_CFG[status];
+  const isActive  = status === "working" || status === "alerta";
+
+  // Especie y paleta por agente
+  const SPECIES = {
+    orchestrator:  { fur: "#ccc4b0", face: "#e8e2d4", belly: "#ddd6c4", eyeColor: "#3a2800", species: "langur_elder" },
+    gym:           { fur: "#7b3d18", face: "#d4855a", belly: "#e8a87a", eyeColor: "#1a0800", species: "capuchin"     },
+    finanzas:      { fur: "#d4880a", face: "#4a82c8", belly: "#e8a430", eyeColor: "#0a1840", species: "snubnose"     },
+    procesos:      { fur: "#7a8a94", face: "#a8b8c4", belly: "#b8c8d4", eyeColor: "#1a2830", species: "langur_gray"  },
+    parkourDesign: { fur: "#8a3a14", face: "#c87050", belly: "#d4906a", eyeColor: "#180800", species: "spider"       },
+  };
+  const p = SPECIES[uid] || SPECIES.gym;
+  const dark = hexShade(p.fur, 0.68);
+
+  useFrame((state) => {
+    if (!groupRef.current) return;
+    const t = state.clock.elapsedTime;
+    const phase = uid.charCodeAt(0) * 0.4;
+    if (isActive && pulse) {
+      groupRef.current.position.y = position[1] + Math.sin(t * 2.8 + phase) * 0.08 + 0.04;
+    } else {
+      groupRef.current.position.y = position[1] + Math.sin(t * 0.9 + phase) * 0.020;
+    }
+    // Cola: oscilación suave
+    if (tailRef.current) {
+      tailRef.current.rotation.z = Math.sin(t * 1.4 + phase) * 0.22 + 0.4;
+    }
+  });
+
+  return (
+    <group ref={groupRef} position={position} onClick={onClick}>
+
+      {/* Status orb */}
+      <mesh position={[0.46, 2.05, 0.1]}>
+        <sphereGeometry args={[0.065, 8, 8]} />
+        <meshStandardMaterial color={scfg.dot} emissive={scfg.dot} emissiveIntensity={isActive ? 1.3 : 0.4} />
+      </mesh>
+
+      {/* ── COLA — curva hacia arriba y atrás ── */}
+      <group ref={tailRef} position={[0, 0.62, -0.18]}>
+        {[0,1,2,3,4,5].map((i) => {
+          const angle = (i / 5) * Math.PI * 0.85;
+          const r = 0.38 + i * 0.04;
+          const tx = 0;
+          const ty = Math.sin(angle) * r;
+          const tz = -Math.cos(angle) * r * 0.7;
+          const sz = 0.075 - i * 0.010;
+          return (
+            <mesh key={i} position={[tx, ty, tz]}>
+              <sphereGeometry args={[Math.max(sz, 0.025), 8, 6]} />
+              <meshStandardMaterial color={i > 3 ? p.belly : p.fur} roughness={0.65} />
+            </mesh>
+          );
+        })}
+      </group>
+
+      {/* ── PIES ── */}
+      {[-1, 1].map((s) => (
+        <mesh key={s} position={[s * 0.15, 0.06, 0.10]} castShadow>
+          <sphereGeometry args={[0.13, 10, 8]} />
+          <meshStandardMaterial color={dark} roughness={0.7} />
+        </mesh>
+      ))}
+
+      {/* ── PIERNAS ── */}
+      {[-1, 1].map((s) => (
+        <mesh key={s} position={[s * 0.14, 0.30, 0.04]} castShadow>
+          <cylinderGeometry args={[0.095, 0.095, 0.38, 10]} />
+          <meshStandardMaterial color={p.fur} roughness={0.65} />
+        </mesh>
+      ))}
+
+      {/* ── TORSO ── */}
+      <mesh position={[0, 0.72, 0]} castShadow>
+        <sphereGeometry args={[0.30, 14, 12]} />
+        <meshStandardMaterial color={p.fur} roughness={0.65} />
+      </mesh>
+      {/* Barriga más clara */}
+      <mesh position={[0, 0.68, 0.22]}>
+        <sphereGeometry args={[0.22, 12, 10]} />
+        <meshStandardMaterial color={p.belly} roughness={0.6} />
+      </mesh>
+
+      {/* ── BRAZOS — más largos que chibi humano ── */}
+      {[-1, 1].map((s) => (
+        <group key={s}>
+          {/* Brazo superior */}
+          <mesh position={[s * 0.36, 0.74, 0.04]} rotation={[0.15, 0, s * 0.45]} castShadow>
+            <cylinderGeometry args={[0.082, 0.082, 0.46, 10]} />
+            <meshStandardMaterial color={p.fur} roughness={0.65} />
+          </mesh>
+          {/* Mano */}
+          <mesh position={[s * 0.46, 0.48, 0.10]}>
+            <sphereGeometry args={[0.105, 10, 8]} />
+            <meshStandardMaterial color={dark} roughness={0.6} />
+          </mesh>
+        </group>
+      ))}
+
+      {/* ── CABEZA — grande, chibi ── */}
+      <mesh position={[0, 1.35, 0]} castShadow>
+        <sphereGeometry args={[0.38, 16, 14]} />
+        <meshStandardMaterial color={p.fur} roughness={0.65} />
+      </mesh>
+
+      {/* ── DISCO DE CARA — más claro, ligeramente protruyente ── */}
+      <mesh position={[0, 1.28, 0.28]} castShadow>
+        <sphereGeometry args={[0.265, 14, 12]} />
+        <meshStandardMaterial color={p.face} roughness={0.60} />
+      </mesh>
+
+      {/* ── HOCICO — pequeña protuberancia ── */}
+      <mesh position={[0, 1.20, 0.36]}>
+        <sphereGeometry args={[0.10, 10, 8]} />
+        <meshStandardMaterial color={p.face} roughness={0.58} />
+      </mesh>
+      {/* Nariz */}
+      <mesh position={[0, 1.24, 0.42]}>
+        <sphereGeometry args={[0.035, 8, 6]} />
+        <meshStandardMaterial color={dark} roughness={0.5} />
+      </mesh>
+
+      {/* ── OREJAS ── */}
+      {[-1, 1].map((s) => (
+        <group key={s} position={[s * 0.37, 1.38, 0.04]}>
+          <mesh castShadow>
+            <sphereGeometry args={[0.115, 10, 8]} />
+            <meshStandardMaterial color={p.fur} roughness={0.65} />
+          </mesh>
+          {/* Interior oreja */}
+          <mesh position={[s * 0.04, 0, 0.06]}>
+            <sphereGeometry args={[0.068, 8, 6]} />
+            <meshStandardMaterial color={p.face} roughness={0.55} />
+          </mesh>
+        </group>
+      ))}
+
+      {/* ── OJOS chibi grandes ── */}
+      {[[-0.13, 1.38, 0.37], [0.13, 1.38, 0.37]].map(([ex, ey, ez], i) => (
+        <group key={i}>
+          {/* Blanco ojo */}
+          <mesh position={[ex, ey, ez]}>
+            <sphereGeometry args={[0.092, 10, 8]} />
+            <meshStandardMaterial color="white" />
+          </mesh>
+          {/* Iris */}
+          <mesh position={[ex + (i === 0 ? 0.014 : -0.014), ey - 0.006, ez + 0.066]}>
+            <sphereGeometry args={[0.052, 8, 8]} />
+            <meshStandardMaterial color={p.eyeColor} />
+          </mesh>
+          {/* Brillo */}
+          <mesh position={[ex + (i === 0 ? 0.028 : -0.018), ey + 0.022, ez + 0.088]}>
+            <sphereGeometry args={[0.018, 6, 6]} />
+            <meshStandardMaterial color="white" />
+          </mesh>
+        </group>
+      ))}
+
+      {/* ── SONRISA / BOCA ── */}
+      <mesh position={[0, 1.17, 0.39]} rotation={[0.1, 0, 0]}>
+        <torusGeometry args={[0.055, 0.014, 6, 14, Math.PI]} />
+        <meshStandardMaterial color={dark} />
+      </mesh>
+
+      {/* ══ ACCESORIOS POR ESPECIE ══ */}
+
+      {/* ORCHESTRATOR — langur anciano: mechón blanco + bastón sabio */}
+      {uid === "orchestrator" && (
+        <>
+          {/* Pelo blanco distintivo */}
+          <mesh position={[0, 1.65, 0.04]} castShadow>
+            <sphereGeometry args={[0.26, 12, 8]} />
+            <meshStandardMaterial color="#f0ece4" roughness={0.7} />
+          </mesh>
+          <mesh position={[0.18, 1.72, 0.10]} rotation={[0.3, 0.3, 0]}>
+            <sphereGeometry args={[0.13, 8, 6]} />
+            <meshStandardMaterial color="#e8e4dc" roughness={0.7} />
+          </mesh>
+          <mesh position={[-0.16, 1.70, 0.08]} rotation={[0.3, -0.3, 0]}>
+            <sphereGeometry args={[0.11, 8, 6]} />
+            <meshStandardMaterial color="#e8e4dc" roughness={0.7} />
+          </mesh>
+          {/* Corona dorada — símbolo de autoridad */}
+          <group position={[0, 1.75, 0]}>
+            <mesh>
+              <cylinderGeometry args={[0.22, 0.19, 0.09, 16]} />
+              <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.15} />
+            </mesh>
+            {[0, 72, 144, 216, 288].map((deg, i) => (
+              <mesh key={i} position={[Math.cos(deg * Math.PI/180)*0.18, 0.12, Math.sin(deg * Math.PI/180)*0.18]}>
+                <coneGeometry args={[0.048, 0.17, 6]} />
+                <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.15} />
+              </mesh>
+            ))}
+          </group>
+        </>
+      )}
+
+      {/* GYM — capuchino joven: headband rojo + franja facial blanca */}
+      {uid === "gym" && (
+        <>
+          {/* Franja facial más clara — característica del capuchino */}
+          <mesh position={[0, 1.52, 0.14]}>
+            <sphereGeometry args={[0.20, 10, 8]} />
+            <meshStandardMaterial color="#e8c8a8" roughness={0.6} />
+          </mesh>
+          {/* Headband rojo weAPES */}
+          <mesh position={[0, 1.58, 0.08]} rotation={[0.15, 0, 0]}>
+            <torusGeometry args={[0.35, 0.048, 8, 32]} />
+            <meshStandardMaterial color="#ea5653" roughness={0.5} />
+          </mesh>
+          {/* Knot del headband */}
+          <mesh position={[0.26, 1.62, 0.24]} rotation={[0.3, 0, 0.4]}>
+            <boxGeometry args={[0.08, 0.06, 0.04]} />
+            <meshStandardMaterial color="#c03030" roughness={0.5} />
+          </mesh>
+        </>
+      )}
+
+      {/* FINANZAS — nariz chata dorado: cara azul distintiva + lentes */}
+      {uid === "finanzas" && (
+        <>
+          {/* Cara azul — característica del golden snub-nosed */}
+          <mesh position={[0, 1.30, 0.30]}>
+            <sphereGeometry args={[0.27, 14, 12]} />
+            <meshStandardMaterial color="#4a82c8" roughness={0.55} />
+          </mesh>
+          {/* Nariz chata característica */}
+          <mesh position={[0, 1.26, 0.43]}>
+            <sphereGeometry args={[0.072, 8, 6]} />
+            <meshStandardMaterial color="#3a72b8" roughness={0.5} />
+          </mesh>
+          {/* Lentes sobre la cara azul */}
+          <group position={[0, 1.35, 0.43]}>
+            {[-0.12, 0.12].map((lx) => (
+              <mesh key={lx} position={[lx, 0, 0]} rotation={[Math.PI/2, 0, 0]}>
+                <torusGeometry args={[0.074, 0.018, 8, 18]} />
+                <meshStandardMaterial color="#d4a800" metalness={0.6} roughness={0.3} />
+              </mesh>
+            ))}
+            <mesh>
+              <boxGeometry args={[0.042, 0.016, 0.010]} />
+              <meshStandardMaterial color="#d4a800" metalness={0.6} roughness={0.3} />
+            </mesh>
+          </group>
+        </>
+      )}
+
+      {/* PROCESOS — langur gris: pelo erizado + casco amarillo */}
+      {uid === "procesos" && (
+        <>
+          {/* Pelo erizado característico langur gris */}
+          {[[-0.08,1.72,0.10],[0.10,1.74,0.06],[-0.20,1.66,0.12],[0.22,1.65,0.08],[0,1.76,-0.04]].map(([hx,hy,hz],i)=>(
+            <mesh key={i} position={[hx,hy,hz]} rotation={[hz*2, 0, hx*3]}>
+              <coneGeometry args={[0.030, 0.14, 5]} />
+              <meshStandardMaterial color="#8a9aaa" roughness={0.7} />
+            </mesh>
+          ))}
+          {/* Casco duro amarillo */}
+          <group position={[0, 1.68, 0]}>
+            <mesh castShadow>
+              <sphereGeometry args={[0.28, 12, 8, 0, Math.PI*2, 0, Math.PI*0.52]} />
+              <meshStandardMaterial color="#fbbf24" roughness={0.4} />
+            </mesh>
+            <mesh position={[0, -0.02, 0]}>
+              <cylinderGeometry args={[0.32, 0.32, 0.04, 16]} />
+              <meshStandardMaterial color="#f59e0b" roughness={0.4} />
+            </mesh>
+          </group>
+        </>
+      )}
+
+      {/* PARKOURDESIGN — spider monkey: pelo rojizo, brazos extra largos, pluma diseño */}
+      {uid === "parkourDesign" && (
+        <>
+          {/* Cresta roja característica */}
+          <mesh position={[0, 1.70, 0.06]} castShadow>
+            <sphereGeometry args={[0.22, 10, 8]} />
+            <meshStandardMaterial color="#a04020" roughness={0.65} />
+          </mesh>
+          <mesh position={[0.06, 1.80, 0.06]} rotation={[0.2, 0, 0.15]}>
+            <sphereGeometry args={[0.13, 8, 6]} />
+            <meshStandardMaterial color="#a04020" roughness={0.65} />
+          </mesh>
+          {/* Pluma / lápiz de diseñador */}
+          <mesh position={[0.48, 0.80, 0.10]} rotation={[0.3, 0, -0.6]}>
+            <cylinderGeometry args={[0.018, 0.018, 0.38, 6]} />
+            <meshStandardMaterial color="#f8f4e8" roughness={0.5} />
+          </mesh>
+          <mesh position={[0.48, 0.60, 0.12]} rotation={[0.3, 0, -0.6]}>
+            <coneGeometry args={[0.018, 0.06, 6]} />
+            <meshStandardMaterial color="#1a1a1a" />
+          </mesh>
+          {/* Marca weAPES en muñeca — brazalete morado */}
+          <mesh position={[-0.47, 0.47, 0.10]} rotation={[0.15, 0, 0.45]}>
+            <torusGeometry args={[0.09, 0.022, 8, 18]} />
+            <meshStandardMaterial color="#9D4EDD" roughness={0.4} />
+          </mesh>
+        </>
+      )}
+
+      {/* Floating name */}
+      <Text position={[0, 2.18, 0]} fontSize={0.16} color="#1e293b"
+        anchorX="center" anchorY="bottom" outlineWidth={0.012} outlineColor="white">
+        {name}
+      </Text>
+
+    </group>
+  );
+}
+
+// ── DesignChar — modelo 3D para agentes de diseño (arquitecto/diseñador) ──
+// ── MechBot — chibi mech con cabeza-monitor, armadura en placas ──
+function DesignChar({ position, color, name, status, uid, pulse, selected, onClick }) {
+  const groupRef  = useRef();
+  const armRef    = useRef();  // brazo derecho anima diferente
+  const scfg      = STATUS_CFG[status];
+  const isActive  = status === "working" || status === "alerta";
+  const isParkour = uid === "parkourDesign";
+
+  // Paleta fija mech: blanco armor + slate oscuro + acento por agente
+  const ARMOR  = "#dde3ea";   // placa principal crema-blanco
+  const DARK   = "#2d3a4a";   // juntas y paneles oscuros
+  const JOINT  = "#3d4f63";   // rodillas / codos
+  const COPPER = "#c48040";   // tornillos y detalles
+  const SCREEN = "#4a6fa5";   // pantalla de la cabeza (azul)
+  const accent = color;       // naranja/verde/teal según agente
+
+  useFrame((state) => {
+    if (!groupRef.current) return;
+    const t = state.clock.elapsedTime;
+    const phase = uid.charCodeAt(0) * 0.4;
+    if (isActive && pulse) {
+      groupRef.current.position.y = position[1] + Math.sin(t * 2.8 + phase) * 0.07 + 0.04;
+    } else {
+      groupRef.current.position.y = position[1] + Math.sin(t * 0.9 + phase) * 0.018;
+    }
+    // brazo izquierdo: micro oscilación idle
+    if (armRef.current) {
+      armRef.current.rotation.z = Math.sin(t * 1.1 + phase) * 0.06 + 0.12;
+    }
+  });
+
+  return (
+    <group ref={groupRef} position={position} onClick={onClick}>
+
+      {/* Status orb */}
+      <mesh position={[0.48, 2.12, 0.1]}>
+        <sphereGeometry args={[0.065, 8, 8]} />
+        <meshStandardMaterial color={scfg.dot} emissive={scfg.dot} emissiveIntensity={isActive ? 1.4 : 0.4} />
+      </mesh>
+
+      {/* ── PIES mech — anchos, con ranura frontal ── */}
+      {[-1, 1].map((s) => (
+        <group key={s} position={[s * 0.17, 0, s * 0.02]}>
+          {/* Bota outer */}
+          <mesh position={[0, 0.09, 0.04]} castShadow>
+            <boxGeometry args={[0.22, 0.18, 0.30]} />
+            <meshStandardMaterial color={DARK} roughness={0.5} />
+          </mesh>
+          {/* Placa frontal bota */}
+          <mesh position={[0, 0.09, 0.19]}>
+            <boxGeometry args={[0.17, 0.14, 0.03]} />
+            <meshStandardMaterial color={ARMOR} roughness={0.4} />
+          </mesh>
+          {/* Ranura frontal */}
+          <mesh position={[0, 0.04, 0.205]}>
+            <boxGeometry args={[0.10, 0.025, 0.01]} />
+            <meshStandardMaterial color={DARK} />
+          </mesh>
+        </group>
+      ))}
+
+      {/* ── PIERNAS — placas superpuestas ── */}
+      {[-1, 1].map((s) => (
+        <group key={s} position={[s * 0.17, 0, 0]}>
+          {/* Muslo */}
+          <mesh position={[0, 0.44, 0]} castShadow>
+            <boxGeometry args={[0.19, 0.34, 0.21]} />
+            <meshStandardMaterial color={DARK} roughness={0.45} />
+          </mesh>
+          {/* Placa muslo frontal */}
+          <mesh position={[0, 0.50, 0.11]}>
+            <boxGeometry args={[0.14, 0.22, 0.04]} />
+            <meshStandardMaterial color={ARMOR} roughness={0.4} />
+          </mesh>
+          {/* Rodilla */}
+          <mesh position={[0, 0.265, 0.04]}>
+            <sphereGeometry args={[0.085, 10, 8]} />
+            <meshStandardMaterial color={JOINT} metalness={0.3} roughness={0.5} />
+          </mesh>
+          {/* Tornillo rodilla */}
+          <mesh position={[0, 0.265, 0.11]}>
+            <cylinderGeometry args={[0.022, 0.022, 0.04, 8]} />
+            <meshStandardMaterial color={COPPER} metalness={0.7} roughness={0.3} />
+          </mesh>
+        </group>
+      ))}
+
+      {/* ── TORSO — cuerpo mech ── */}
+      {/* Chasis principal */}
+      <mesh position={[0, 0.82, 0]} castShadow>
+        <boxGeometry args={[0.46, 0.50, 0.30]} />
+        <meshStandardMaterial color={DARK} roughness={0.45} />
+      </mesh>
+      {/* Placa pectoral */}
+      <mesh position={[0, 0.90, 0.155]}>
+        <boxGeometry args={[0.36, 0.28, 0.04]} />
+        <meshStandardMaterial color={ARMOR} roughness={0.38} />
+      </mesh>
+      {/* Punto central pecho (como la imagen) */}
+      <mesh position={[0, 0.86, 0.178]}>
+        <cylinderGeometry args={[0.045, 0.045, 0.025, 14]} />
+        <meshStandardMaterial color={JOINT} metalness={0.4} roughness={0.4} />
+      </mesh>
+      {/* Placa abdominal */}
+      <mesh position={[0, 0.66, 0.152]}>
+        <boxGeometry args={[0.30, 0.12, 0.04]} />
+        <meshStandardMaterial color={ARMOR} roughness={0.42} />
+      </mesh>
+      {/* Líneas separadoras abdomen */}
+      {[-0.08, 0.08].map((lx, i) => (
+        <mesh key={i} position={[lx, 0.66, 0.174]}>
+          <boxGeometry args={[0.02, 0.10, 0.01]} />
+          <meshStandardMaterial color={DARK} />
+        </mesh>
+      ))}
+      {/* Acento de color — banda lateral */}
+      <mesh position={[0, 1.00, 0.153]}>
+        <boxGeometry args={[0.36, 0.04, 0.02]} />
+        <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.4} />
+      </mesh>
+
+      {/* ── HOMBROS — esferas de junta + pauldron ── */}
+      {[-1, 1].map((s) => (
+        <group key={s} position={[s * 0.30, 1.00, 0]}>
+          {/* Esfera junta */}
+          <mesh>
+            <sphereGeometry args={[0.11, 10, 8]} />
+            <meshStandardMaterial color={JOINT} metalness={0.3} roughness={0.45} />
+          </mesh>
+          {/* Pauldron — placa hombro */}
+          <mesh position={[s * 0.06, 0.06, 0]}>
+            <boxGeometry args={[0.18, 0.14, 0.24]} />
+            <meshStandardMaterial color={ARMOR} roughness={0.38} />
+          </mesh>
+          {/* Tornillo hombro */}
+          <mesh position={[s * 0.16, 0.06, 0.08]}>
+            <sphereGeometry args={[0.028, 6, 6]} />
+            <meshStandardMaterial color={COPPER} metalness={0.75} roughness={0.25} />
+          </mesh>
+        </group>
+      ))}
+
+      {/* ── BRAZO DERECHO — estándar ── */}
+      <group position={[0.42, 0.82, 0]}>
+        {/* Antebrazo */}
+        <mesh position={[0, -0.14, 0]} castShadow>
+          <boxGeometry args={[0.16, 0.28, 0.18]} />
+          <meshStandardMaterial color={DARK} roughness={0.45} />
+        </mesh>
+        {/* Placa antebrazo */}
+        <mesh position={[0.02, -0.14, 0.10]}>
+          <boxGeometry args={[0.11, 0.22, 0.04]} />
+          <meshStandardMaterial color={ARMOR} roughness={0.38} />
+        </mesh>
+        {/* Mano — cubo redondeado */}
+        <mesh position={[0.02, -0.35, 0.02]} castShadow>
+          <boxGeometry args={[0.14, 0.14, 0.14]} />
+          <meshStandardMaterial color={JOINT} roughness={0.5} />
+        </mesh>
+        {/* Acento mano */}
+        <mesh position={[0.02, -0.35, 0.075]}>
+          <boxGeometry args={[0.08, 0.04, 0.02]} />
+          <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.5} />
+        </mesh>
+      </group>
+
+      {/* ── BRAZO IZQUIERDO — módulo forearm (como en imagen) ── */}
+      <group ref={armRef} position={[-0.42, 0.82, 0]}>
+        {/* Upper arm */}
+        <mesh position={[0, -0.04, 0]} castShadow>
+          <boxGeometry args={[0.15, 0.18, 0.17]} />
+          <meshStandardMaterial color={DARK} roughness={0.45} />
+        </mesh>
+        {/* Codo */}
+        <mesh position={[0, -0.14, 0]}>
+          <sphereGeometry args={[0.075, 8, 8]} />
+          <meshStandardMaterial color={JOINT} metalness={0.3} roughness={0.45} />
+        </mesh>
+        {/* Módulo forearm — más grueso que el derecho */}
+        <mesh position={[-0.02, -0.28, 0]} castShadow>
+          <boxGeometry args={[0.20, 0.24, 0.22]} />
+          <meshStandardMaterial color={ARMOR} roughness={0.38} />
+        </mesh>
+        {/* Banda acento módulo */}
+        <mesh position={[-0.02, -0.23, 0.115]}>
+          <boxGeometry args={[0.16, 0.05, 0.02]} />
+          <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.4} />
+        </mesh>
+        {/* Detalle lateral módulo — ranuras */}
+        {[-0.06, 0, 0.06].map((lz, i) => (
+          <mesh key={i} position={[0.102, -0.28, lz]}>
+            <boxGeometry args={[0.02, 0.04, 0.025]} />
+            <meshStandardMaterial color={DARK} />
+          </mesh>
+        ))}
+        {/* Puño */}
+        <mesh position={[-0.02, -0.44, 0.02]} castShadow>
+          <boxGeometry args={[0.15, 0.14, 0.15]} />
+          <meshStandardMaterial color={JOINT} roughness={0.5} />
+        </mesh>
+      </group>
+
+      {/* ── CUELLO ── */}
+      <mesh position={[0, 1.10, 0]}>
+        <cylinderGeometry args={[0.10, 0.12, 0.10, 10]} />
+        <meshStandardMaterial color={JOINT} metalness={0.3} roughness={0.4} />
+      </mesh>
+
+      {/* ── CABEZA MONITOR — pieza central ── */}
+      {/* Carcasa exterior */}
+      <mesh position={[0, 1.40, 0]} castShadow>
+        <boxGeometry args={[0.58, 0.54, 0.50]} />
+        <meshStandardMaterial color={ARMOR} roughness={0.35} />
+      </mesh>
+      {/* Pantalla frontal */}
+      <mesh position={[0, 1.42, 0.26]}>
+        <boxGeometry args={[0.40, 0.36, 0.03]} />
+        <meshStandardMaterial color={SCREEN} roughness={0.3} metalness={0.1}
+          emissive={SCREEN} emissiveIntensity={isActive ? 0.5 : 0.15} />
+      </mesh>
+      {/* Bisel pantalla */}
+      <mesh position={[0, 1.42, 0.245]}>
+        <boxGeometry args={[0.44, 0.40, 0.02]} />
+        <meshStandardMaterial color={DARK} roughness={0.5} />
+      </mesh>
+      {/* OJOS — círculos blancos en pantalla */}
+      {[-0.10, 0.10].map((ex, i) => (
+        <group key={i}>
+          <mesh position={[ex, 1.46, 0.278]}>
+            <circleGeometry args={[0.075, 16]} />
+            <meshStandardMaterial color="white" emissive="white" emissiveIntensity={0.8} />
+          </mesh>
+          {/* Pupila */}
+          <mesh position={[ex + (i === 0 ? 0.01 : -0.01), 1.455, 0.282]}>
+            <circleGeometry args={[0.032, 12]} />
+            <meshStandardMaterial color="#c8d8ee" emissive="#c8d8ee" emissiveIntensity={0.5} />
+          </mesh>
+        </group>
+      ))}
+      {/* Boca — línea sutil */}
+      <mesh position={[0, 1.325, 0.276]}>
+        <boxGeometry args={[0.065, 0.015, 0.01]} />
+        <meshStandardMaterial color="#8fabc7" />
+      </mesh>
+
+      {/* Puerto circular lateral derecho — como en la imagen */}
+      <mesh position={[0.30, 1.40, 0.04]} rotation={[0, Math.PI / 2, 0]}>
+        <cylinderGeometry args={[0.11, 0.11, 0.06, 20]} />
+        <meshStandardMaterial color={JOINT} roughness={0.4} metalness={0.2} />
+      </mesh>
+      <mesh position={[0.33, 1.40, 0.04]} rotation={[0, Math.PI / 2, 0]}>
+        <cylinderGeometry args={[0.07, 0.07, 0.04, 16]} />
+        <meshStandardMaterial color={DARK} roughness={0.6} />
+      </mesh>
+      {/* Centro del puerto — punto luminoso */}
+      <mesh position={[0.345, 1.40, 0.04]} rotation={[0, Math.PI / 2, 0]}>
+        <circleGeometry args={[0.04, 12]} />
+        <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.6} />
+      </mesh>
+
+      {/* Tornillos esquinas cabeza */}
+      {[[-0.26, 1.62, 0.255], [0.26, 1.62, 0.255], [-0.26, 1.22, 0.255], [0.26, 1.22, 0.255]].map(([bx, by, bz], i) => (
+        <mesh key={i} position={[bx, by, bz]}>
+          <cylinderGeometry args={[0.020, 0.020, 0.02, 8]} />
+          <meshStandardMaterial color={COPPER} metalness={0.75} roughness={0.25} />
+        </mesh>
+      ))}
+
+      {/* Antena superior — parkour: corta y doble / clínica: larga fina */}
+      {isParkour ? (
+        <group position={[0, 1.69, 0]}>
+          {[-0.10, 0.10].map((ax, i) => (
+            <group key={i} position={[ax, 0, 0]}>
+              <mesh>
+                <cylinderGeometry args={[0.015, 0.015, 0.14, 6]} />
+                <meshStandardMaterial color={DARK} />
+              </mesh>
+              <mesh position={[0, 0.09, 0]}>
+                <sphereGeometry args={[0.028, 8, 8]} />
+                <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.8} />
+              </mesh>
+            </group>
+          ))}
+        </group>
+      ) : (
+        <group position={[0, 1.69, 0]}>
+          <mesh>
+            <cylinderGeometry args={[0.012, 0.012, 0.22, 6]} />
+            <meshStandardMaterial color={DARK} />
+          </mesh>
+          <mesh position={[0, 0.13, 0]}>
+            <sphereGeometry args={[0.032, 8, 8]} />
+            <meshStandardMaterial color={accent} emissive={accent} emissiveIntensity={0.9} />
+          </mesh>
+        </group>
+      )}
+
+      {/* Floating name */}
+      <Text position={[0, 2.22, 0]} fontSize={0.15} color="#1e293b"
+        anchorX="center" anchorY="bottom" outlineWidth={0.012} outlineColor="white">
+        {name}
+      </Text>
+
+    </group>
+  );
+}
+
+// Derivados de AGENTS — fuente única de verdad
+const CHAT_AGENTS = AGENTS.map(({ id, chatName, emoji, colorKey, company }) => ({
+  id, name: chatName, emoji, colorKey, company,
+}));
+
+const COLLAB_AGENT_LIST = AGENTS
+  .filter(a => a.company !== "shared" && !a.id.includes("Design"))
+  .map(({ id, chatName, emoji, colorKey }) => ({ id, name: chatName, emoji, colorKey }));
+
 const DESK_CFG = [
-  { id: "gym",          x: 0.4,  z: 2.0, w: 1.8, d: 1.1 },
-  { id: "orchestrator", x: 3.2,  z: 0.4, w: 2.0, d: 1.1 },
-  { id: "procesos",     x: 3.2,  z: 4.3, w: 2.0, d: 1.1 },
-  { id: "ventas",       x: 5.8,  z: 2.0, w: 1.8, d: 1.1 },
-  { id: "finanzas",     x: 0.4,  z: 4.6, w: 1.8, d: 1.1 },
+  { id: "gym",           x: 0.4,  z: 2.0, w: 1.8, d: 1.1 },
+  { id: "orchestrator",  x: 3.2,  z: 0.4, w: 2.0, d: 1.1 },
+  { id: "procesos",      x: 3.2,  z: 4.3, w: 2.0, d: 1.1 },
+  { id: "ventas",        x: 5.8,  z: 2.0, w: 1.8, d: 1.1 },
+  { id: "finanzas",      x: 0.4,  z: 4.6, w: 1.8, d: 1.1 },
+  { id: "parkourDesign", x: 5.8,  z: 4.6, w: 1.8, d: 1.1 },
+  { id: "clinicDesign",  x: 0.4,  z: 0.4, w: 1.8, d: 1.1 },
 ];
 
 const CHAIR_POSITIONS = [
@@ -1043,9 +1599,63 @@ const CHAIR_POSITIONS = [
 
 const TABLE_LEG_POSITIONS = [[2.7,2.35],[5.3,2.35],[2.7,3.65],[5.3,3.65]];
 
+function OfficePanel({ endpoint, title, subtitle, accentColor, bgGradient }) {
+  const [img, setImg] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  const renderOffice = async () => {
+    setLoading(true); setError(null);
+    try {
+      const r = await fetch(`http://localhost:3001${endpoint}`, { method: "POST" });
+      const data = await r.json();
+      if (data.image) setImg(data.image);
+      else setError(data.error ?? "Sin imagen");
+    } catch (e) { setError(e.message); }
+    setLoading(false);
+  };
+
+  return (
+    <div style={{ width: "100%", borderRadius: 16, overflow: "hidden", position: "relative", background: bgGradient }}>
+      <div style={{ padding: "14px 20px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div>
+          <div style={{ fontWeight: 800, fontSize: 16, color: "white" }}>{title}</div>
+          <div style={{ fontSize: 12, color: "rgba(255,255,255,0.6)", marginTop: 2 }}>{subtitle}</div>
+        </div>
+        <button onClick={renderOffice} disabled={loading}
+          style={{ padding: "8px 16px", background: loading ? "rgba(255,255,255,0.15)" : accentColor, color: "white", border: "none", borderRadius: 8, cursor: loading ? "not-allowed" : "pointer", fontSize: 13, fontWeight: 700 }}>
+          {loading ? "⏳ Renderizando…" : img ? "🔄 Re-render" : "🎬 Renderizar"}
+        </button>
+      </div>
+      <div style={{ height: 460, position: "relative" }}>
+        {img ? (
+          <img src={`data:image/png;base64,${img}`} style={{ width: "100%", height: "100%", objectFit: "cover" }} alt={title} />
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", color: "white", gap: 14 }}>
+            {loading ? (
+              <>
+                <div style={{ fontSize: 42 }}>🎬</div>
+                <div style={{ fontSize: 15, fontWeight: 700 }}>Renderizando en Blender…</div>
+                <div style={{ fontSize: 12, opacity: 0.5 }}>EEVEE · ~20-30 seg</div>
+              </>
+            ) : (
+              <>
+                {error && <div style={{ fontSize: 12, color: "#fca5a5", maxWidth: 360, textAlign: "center", padding: "0 20px" }}>{error}</div>}
+                <button onClick={renderOffice}
+                  style={{ padding: "11px 26px", background: accentColor, color: "white", border: "none", borderRadius: 10, cursor: "pointer", fontSize: 14, fontWeight: 700 }}>
+                  🎬 Renderizar oficina
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function Office3D({ agents, pulse, onSelectAgent, selected }) {
   const agentMap = Object.fromEntries(agents.map((a) => [a.id, a]));
-
   return (
     <div style={{ width: "100%", height: 560, borderRadius: 16, overflow: "hidden" }}>
       <Canvas shadows camera={{ position: [4, 10, 13], fov: 40 }}
@@ -1206,16 +1816,18 @@ function Office3D({ agents, pulse, onSelectAgent, selected }) {
                 uid={dc.id}
                 onClick={() => onSelectAgent(agent)}
               />
-              <ChibiChar
-                position={[dc.x + dc.w / 2, 0, dc.z + dc.d + 0.38]}
-                color={color}
-                name={agent.name}
-                status={agent.status}
-                uid={dc.id}
-                pulse={pulse}
-                selected={isSel}
-                onClick={() => onSelectAgent(agent)}
-              />
+              {(() => {
+                const charProps = {
+                  position: [dc.x + dc.w / 2, 0, dc.z + dc.d + 0.38],
+                  color, name: agent.name, status: agent.status,
+                  uid: dc.id, pulse, selected: isSel,
+                  onClick: () => onSelectAgent(agent),
+                };
+                if (dc.id === "clinicDesign")   return <DesignChar   {...charProps} />;
+                if (dc.id === "ventas")          return <VentasChibi  {...charProps} />;
+                // weAPES agents + orchestrator + parkourDesign → primate
+                return <ChibiChar {...charProps} />;
+              })()}
             </group>
           );
         })}
@@ -1230,28 +1842,40 @@ function Office3D({ agents, pulse, onSelectAgent, selected }) {
 
 export default function App() {
   const [tab, setTab] = useState("red");
+  const [company, setCompany] = useState("all"); // "all" | "weapes" | "woodspa"
   const [selected, setSelected] = useState(null);
   const [openBriefs, setOpenBriefs] = useState({});
   const [pulse, setPulse] = useState(false);
 
+  const visibleAgents = company === "all"
+    ? AGENTS
+    : AGENTS.filter(a => a.company === company || a.company === "shared");
+
   // ── Chat ──
-  const CHAT_AGENTS = [
-    { id: "orchestrator", name: "Orquestador Maestro", emoji: "🧠", colorKey: "purple" },
-    { id: "gym",          name: "Agente Gym PM",       emoji: "🏃", colorKey: "emerald" },
-    { id: "ventas",       name: "CEO / Ventas",        emoji: "🪑", colorKey: "amber" },
-    { id: "finanzas",     name: "Agente Finanzas",     emoji: "📊", colorKey: "cyan" },
-    { id: "procesos",     name: "Agente Procesos",     emoji: "⚙️", colorKey: "blue" },
-  ];
+  // CHAT_AGENTS derivado de AGENTS (módulo-level)
+  const visibleChatAgents = company === "all"
+    ? CHAT_AGENTS
+    : CHAT_AGENTS.filter(a => a.company === company || a.company === "shared");
   const [chatAgent, setChatAgent]   = useState("gym");
   const [chatHistory, setChatHistory] = useState({}); // { agentId: [{role, text}] }
   const [chatInput, setChatInput]   = useState("");
   const [chatLoading, setChatLoading] = useState(false);
+  const [blenderStatus, setBlenderStatus] = useState(null); // null | "running" | "done" | "error"
   const chatBottomRef = useRef(null);
+
+  const DESIGN_AGENT_IDS = ["parkourDesign", "clinicDesign"];
+
+  // Extract the last ```python block from a text string
+  const extractPythonScript = (text) => {
+    const match = text?.match(/```python\s*([\s\S]*?)```/);
+    return match?.[1]?.trim() ?? null;
+  };
 
   const sendChatMessage = () => {
     if (!chatInput.trim() || chatLoading) return;
     const msg = chatInput.trim();
     setChatInput("");
+    setBlenderStatus(null);
     setChatHistory(h => ({ ...h, [chatAgent]: [...(h[chatAgent] || []), { role: "user", text: msg }] }));
     setChatLoading(true);
 
@@ -1283,6 +1907,12 @@ export default function App() {
                 return { ...h, [chatAgent]: hist };
               });
             }
+            if (evt.tool === "run_in_blender") {
+              setBlenderStatus(evt.status === "running" ? "running" : evt.status === "done" ? "done" : "error");
+            }
+            if (evt.workspace) {
+              setWorkspace(w => [...w, evt.workspace]);
+            }
             if (evt.done) setChatLoading(false);
             if (evt.error) { setChatLoading(false); }
           } catch (_) {}
@@ -1293,9 +1923,26 @@ export default function App() {
     }).catch(() => setChatLoading(false));
   };
 
+  const runInBlender = () => {
+    const history = chatHistory[chatAgent] || [];
+    const lastAssistant = [...history].reverse().find(m => m.role === "assistant");
+    const code = extractPythonScript(lastAssistant?.text);
+    if (!code) return;
+    setBlenderStatus("running");
+    fetch("http://localhost:3001/api/blender/run", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ code }),
+    })
+      .then(r => r.json())
+      .then(d => setBlenderStatus(d.ok ? "done" : "error"))
+      .catch(() => setBlenderStatus("error"));
+  };
+
   const clearChatHistory = () => {
     fetch(`http://localhost:3001/api/agents/${chatAgent}/history`, { method: "DELETE" });
     setChatHistory(h => ({ ...h, [chatAgent]: [] }));
+    setBlenderStatus(null);
   };
 
   useEffect(() => {
@@ -1315,6 +1962,80 @@ export default function App() {
   const [auditLog, setAuditLog]         = useState({}); // { agentId: string[] }  — tool calls log
   const [auditRunning, setAuditRunning] = useState(false);
   const [auditPhase, setAuditPhase]     = useState(0); // 0=idle, 1, 2
+
+  // ── Colaboración multi-agente ──
+  // COLLAB_AGENT_LIST derivado de AGENTS (módulo-level)
+  const [collabTopic, setCollabTopic]       = useState("");
+  const [collabAgents, setCollabAgents]     = useState(["gym","ventas","finanzas","procesos"]);
+  const [collabRunning, setCollabRunning]   = useState(false);
+  const [collabRounds, setCollabRounds]     = useState({}); // { agentId: { status, text } }
+  const [collabSynthesis, setCollabSynthesis] = useState("");
+  const [workspace, setWorkspace]           = useState([]); // notas compartidas
+
+  const toggleCollabAgent = (id) =>
+    setCollabAgents(prev => prev.includes(id) ? prev.filter(a => a !== id) : [...prev, id]);
+
+  const fetchWorkspace = () =>
+    fetch("http://localhost:3001/api/workspace")
+      .then(r => r.json())
+      .then(d => setWorkspace(d.entries || []))
+      .catch(() => {});
+
+  const clearWorkspace = () =>
+    fetch("http://localhost:3001/api/workspace", { method: "DELETE" })
+      .then(() => setWorkspace([]));
+
+  const startCollaboration = () => {
+    if (!collabTopic.trim() || collabRunning) return;
+    setCollabRunning(true);
+    setCollabSynthesis("");
+    const initRounds = {};
+    collabAgents.forEach(id => { initRounds[id] = { status: "waiting", text: "" }; });
+    setCollabRounds(initRounds);
+
+    fetch("http://localhost:3001/api/collaborate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ topic: collabTopic, agents: collabAgents }),
+    }).then(res => {
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = "";
+      const pump = ({ done, value }) => {
+        if (done) { setCollabRunning(false); fetchWorkspace(); return; }
+        buf += decoder.decode(value, { stream: true });
+        const lines = buf.split("\n");
+        buf = lines.pop();
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          try {
+            const evt = JSON.parse(line.slice(6));
+            if (evt.step && evt.status === "thinking") {
+              setCollabRounds(r => ({ ...r, [evt.step]: { status: "thinking", text: "" } }));
+            } else if (evt.step && evt.status === "streaming") {
+              if (evt.step === "synthesis") {
+                setCollabSynthesis(s => s + evt.text);
+              } else {
+                setCollabRounds(r => ({
+                  ...r,
+                  [evt.step]: { status: "streaming", text: (r[evt.step]?.text || "") + evt.text },
+                }));
+              }
+            } else if (evt.step && evt.status === "done") {
+              setCollabRounds(r => ({ ...r, [evt.step]: { ...r[evt.step], status: "done" } }));
+            } else if (evt.workspace) {
+              setWorkspace(w => [...w, evt.workspace]);
+            } else if (evt.done) {
+              setCollabRunning(false);
+              fetchWorkspace();
+            }
+          } catch (_) {}
+        }
+        return reader.read().then(pump);
+      };
+      return reader.read().then(pump);
+    }).catch(() => setCollabRunning(false));
+  };
 
   const startAudit = () => {
     const initStatus = {};
@@ -1411,9 +2132,14 @@ export default function App() {
     return () => clearInterval(t);
   }, []);
 
+  useEffect(() => {
+    if (tab === "colaborar") fetchWorkspace();
+  }, [tab]);
+
   const agentMap = Object.fromEntries(AGENTS.map((a) => [a.id, a]));
   const orchestrator = agentMap["orchestrator"];
-  const specialists = ["gym", "ventas", "procesos", "finanzas"].map((id) => agentMap[id]);
+  const allSpecialists = ["gym", "ventas", "procesos", "finanzas", "parkourDesign", "clinicDesign"].map((id) => agentMap[id]).filter(Boolean);
+  const specialists = allSpecialists.filter(a => company === "all" || a.company === company);
 
   const selectAgent = (agent) => setSelected((s) => (s?.id === agent.id ? null : agent));
   const toggleBrief = (id) => setOpenBriefs((p) => ({ ...p, [id]: !p[id] }));
@@ -1422,6 +2148,7 @@ export default function App() {
     { id: "red", label: "🗺️ Red de Agentes" },
     { id: "oficina", label: "🏢 Oficina 3D" },
     { id: "chat", label: "💬 Chat" },
+    { id: "colaborar", label: "🤝 Colaborar" },
     { id: "interacciones", label: "📡 Interacciones" },
     { id: "briefs", label: "📋 Briefs" },
     { id: "auditoria", label: "🌐 Auditoría Web" },
@@ -1439,9 +2166,27 @@ export default function App() {
               <span style={{ fontSize: 26 }}>🤖</span>
               <h1 style={{ fontSize: 20, fontWeight: 800, margin: 0 }}>Multi-Agent Workspace</h1>
             </div>
-            <p style={{ color: "#a5b4fc", fontSize: 13, margin: 0 }}>
-              5 agentes coordinados — Semana 3, Abril 2026
+            <p style={{ color: "#a5b4fc", fontSize: 13, margin: "0 0 12px 0" }}>
+              7 agentes coordinados — Semana 3, Abril 2026
             </p>
+            {/* Company toggle */}
+            <div style={{ display: "flex", gap: 6 }}>
+              {[
+                { id: "all",     label: "Todos",    color: "#a5b4fc" },
+                { id: "weapes",  label: "🏃 weAPES",  color: "#4ade80" },
+                { id: "woodspa", label: "🪑 Woodspa", color: "#fcd34d" },
+              ].map(opt => (
+                <button key={opt.id} onClick={() => setCompany(opt.id)}
+                  style={{
+                    padding: "5px 14px", borderRadius: 20, border: "none", cursor: "pointer", fontSize: 12, fontWeight: 700,
+                    background: company === opt.id ? opt.color : "rgba(255,255,255,0.12)",
+                    color: company === opt.id ? "#0f172a" : "rgba(255,255,255,0.7)",
+                    transition: "all 0.15s",
+                  }}>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
           </div>
           {/* Connected folder badges */}
           <div style={{ display: "flex", flexDirection: "column", gap: 6, alignItems: "flex-end" }}>
@@ -1475,11 +2220,23 @@ export default function App() {
         {/* ══════════════════ TAB: RED ══════════════════ */}
         {tab === "red" && (
           <div>
-            <p style={{ textAlign: "center", color: "#94a3b8", fontSize: 13, marginBottom: 28 }}>
-              Haz clic en cualquier agente para ver su brief, carpeta y equipo. Los agentes con 📁 tienen carpeta conectada.
-            </p>
+            {/* Company group headers */}
+            {company !== "woodspa" && (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, padding: "8px 16px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 10 }}>
+                <span style={{ fontSize: 16 }}>🏃</span>
+                <span style={{ fontWeight: 700, color: "#16a34a", fontSize: 14 }}>weAPES Parkour Center</span>
+                <span style={{ fontSize: 12, color: "#64748b" }}>— Gym PM · Diseño Parkour · Finanzas · Procesos</span>
+              </div>
+            )}
+            {company !== "weapes" && (
+              <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 16, padding: "8px 16px", background: "#fffbeb", border: "1px solid #fde68a", borderRadius: 10 }}>
+                <span style={{ fontSize: 16 }}>🪑</span>
+                <span style={{ fontWeight: 700, color: "#d97706", fontSize: 14 }}>Woodspa — Muebles & Diseño</span>
+                <span style={{ fontSize: 12, color: "#64748b" }}>— CEO/Ventas · Diseño Clínicas</span>
+              </div>
+            )}
 
-            {/* Orchestrator */}
+            {/* Orchestrator (shared) */}
             <div style={{ display: "flex", justifyContent: "center", marginBottom: 0 }}>
               <AgentCard agent={orchestrator} isSelected={selected?.id === orchestrator.id} onClick={() => selectAgent(orchestrator)} wide pulse={pulse} />
             </div>
@@ -1489,17 +2246,27 @@ export default function App() {
               <svg viewBox="0 0 860 64" width="860" height="64" style={{ overflow: "visible" }}>
                 <line x1="430" y1="0" x2="430" y2="32" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="5,4" />
                 <line x1="101" y1="32" x2="759" y2="32" stroke="#cbd5e1" strokeWidth="2" strokeDasharray="5,4" />
-                <line x1="101" y1="32" x2="101" y2="64" stroke="#059669" strokeWidth="2" strokeDasharray="5,4" />
-                <line x1="319" y1="32" x2="319" y2="64" stroke="#d97706" strokeWidth="2" strokeDasharray="5,4" />
-                <line x1="541" y1="32" x2="541" y2="64" stroke="#2563eb" strokeWidth="2" strokeDasharray="5,4" />
-                <line x1="759" y1="32" x2="759" y2="64" stroke="#0891b2" strokeWidth="2" strokeDasharray="5,4" />
+                {specialists.map((ag, i) => {
+                  const xPos = specialists.length > 1 ? 101 + i * ((759-101)/(specialists.length-1)) : 430;
+                  const c2 = ag.company === "weapes" ? "#16a34a" : "#d97706";
+                  return <line key={ag.id} x1={xPos} y1="32" x2={xPos} y2="64" stroke={c2} strokeWidth="2" strokeDasharray="5,4" />;
+                })}
               </svg>
             </div>
 
             {/* Specialists */}
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 16 }}>
+            <div style={{ display: "grid", gridTemplateColumns: `repeat(${Math.min(specialists.length, 4)}, 1fr)`, gap: 16 }}>
               {specialists.map((agent) => (
-                <AgentCard key={agent.id} agent={agent} isSelected={selected?.id === agent.id} onClick={() => selectAgent(agent)} pulse={pulse} />
+                <div key={agent.id} style={{ position: "relative" }}>
+                  <div style={{ position: "absolute", top: 8, right: 8, zIndex: 2, fontSize: 10, fontWeight: 700, padding: "2px 7px", borderRadius: 20,
+                    background: agent.company === "weapes" ? "#f0fdf4" : "#fffbeb",
+                    color: agent.company === "weapes" ? "#16a34a" : "#d97706",
+                    border: `1px solid ${agent.company === "weapes" ? "#86efac" : "#fcd34d"}`,
+                  }}>
+                    {agent.company === "weapes" ? "weAPES" : "Woodspa"}
+                  </div>
+                  <AgentCard agent={agent} isSelected={selected?.id === agent.id} onClick={() => selectAgent(agent)} pulse={pulse} />
+                </div>
               ))}
             </div>
 
@@ -1530,7 +2297,7 @@ export default function App() {
 
             {/* Agent selector */}
             <div style={{ display: "flex", gap: 8, marginBottom: 16, flexWrap: "wrap" }}>
-              {CHAT_AGENTS.map(({ id, name, emoji, colorKey }) => {
+              {visibleChatAgents.map(({ id, name, emoji, colorKey }) => {
                 const c = C[colorKey];
                 const active = chatAgent === id;
                 return (
@@ -1596,6 +2363,42 @@ export default function App() {
               <div ref={chatBottomRef} />
             </div>
 
+            {/* Blender status bar — only for design agents */}
+            {DESIGN_AGENT_IDS.includes(chatAgent) && (() => {
+              const history = chatHistory[chatAgent] || [];
+              const lastAssistant = [...history].reverse().find(m => m.role === "assistant");
+              const hasScript = !!extractPythonScript(lastAssistant?.text);
+              const blenderColors = { running: "#f59e0b", done: "#10b981", error: "#ef4444" };
+              const blenderLabels = { running: "⏳ Ejecutando en Blender…", done: "✅ Script ejecutado en Blender", error: "❌ Error al ejecutar en Blender" };
+              return (
+                <div style={{ marginTop: 10, display: "flex", alignItems: "center", gap: 10 }}>
+                  <button
+                    onClick={runInBlender}
+                    disabled={!hasScript || blenderStatus === "running" || chatLoading}
+                    title={!hasScript ? "No hay script Python en el último mensaje" : "Ejecutar el script Python en Blender"}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 8,
+                      padding: "9px 18px", borderRadius: 10, border: "none",
+                      background: (!hasScript || blenderStatus === "running" || chatLoading) ? "#e2e8f0" : "#e35b2a",
+                      color: (!hasScript || blenderStatus === "running" || chatLoading) ? "#94a3b8" : "white",
+                      fontWeight: 700, fontSize: 13, cursor: (!hasScript || blenderStatus === "running" || chatLoading) ? "not-allowed" : "pointer",
+                      transition: "all 0.15s", flexShrink: 0,
+                    }}
+                  >
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
+                    </svg>
+                    Run in Blender
+                  </button>
+                  {blenderStatus && (
+                    <span style={{ fontSize: 13, fontWeight: 600, color: blenderColors[blenderStatus] }}>
+                      {blenderLabels[blenderStatus]}
+                    </span>
+                  )}
+                </div>
+              );
+            })()}
+
             {/* Input */}
             <div style={{ marginTop: 12, display: "flex", gap: 10 }}>
               <input
@@ -1627,6 +2430,133 @@ export default function App() {
               >
                 {chatLoading ? "⏳" : "Enviar"}
               </button>
+            </div>
+          </div>
+        )}
+
+        {/* ══════════════════ TAB: COLABORAR ══════════════════ */}
+        {tab === "colaborar" && (
+          <div>
+            <div style={{ marginBottom: 28 }}>
+              <h2 style={{ fontWeight: 700, color: "#1e293b", fontSize: 18, margin: "0 0 4px 0" }}>🤝 Sesión Colaborativa</h2>
+              <p style={{ color: "#64748b", fontSize: 13, margin: 0 }}>Los agentes debaten un tema, se comparten información y el Orquestador sintetiza.</p>
+            </div>
+
+            {/* ── Configuración ── */}
+            <div style={{ background: "white", borderRadius: 16, border: "1px solid #e2e8f0", padding: 24, marginBottom: 24 }}>
+              <p style={{ fontWeight: 700, fontSize: 13, color: "#475569", margin: "0 0 12px 0", textTransform: "uppercase", letterSpacing: "0.05em" }}>Tema a debatir</p>
+              <textarea
+                value={collabTopic}
+                onChange={e => setCollabTopic(e.target.value)}
+                placeholder="Ej: ¿Cómo cubrimos el déficit financiero de abril antes del 15 de mayo?"
+                rows={2}
+                style={{ width: "100%", padding: "12px 14px", border: "1.5px solid #e2e8f0", borderRadius: 10, fontSize: 14, fontFamily: "inherit", resize: "vertical", boxSizing: "border-box", outline: "none" }}
+              />
+
+              <p style={{ fontWeight: 700, fontSize: 13, color: "#475569", margin: "16px 0 10px 0", textTransform: "uppercase", letterSpacing: "0.05em" }}>Agentes participantes</p>
+              <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                {COLLAB_AGENT_LIST.map(ag => {
+                  const c = C[ag.colorKey];
+                  const active = collabAgents.includes(ag.id);
+                  return (
+                    <button key={ag.id} onClick={() => toggleCollabAgent(ag.id)}
+                      style={{ display: "flex", alignItems: "center", gap: 6, padding: "8px 14px", borderRadius: 20, border: `2px solid ${active ? c.hex : "#e2e8f0"}`, background: active ? c.hexLight : "white", color: active ? c.hex : "#94a3b8", fontWeight: 700, fontSize: 13, cursor: "pointer", transition: "all 0.15s" }}>
+                      <span>{ag.emoji}</span><span>{ag.name}</span>
+                      {active && <span style={{ fontSize: 11 }}>✓</span>}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div style={{ marginTop: 20, display: "flex", gap: 12 }}>
+                <button onClick={startCollaboration} disabled={collabRunning || !collabTopic.trim() || !collabAgents.length}
+                  style={{ padding: "11px 28px", background: collabRunning ? "#cbd5e1" : "#7c3aed", color: "white", border: "none", borderRadius: 10, fontWeight: 700, fontSize: 14, cursor: collabRunning ? "not-allowed" : "pointer", display: "flex", alignItems: "center", gap: 8 }}>
+                  {collabRunning ? "⏳ Colaborando…" : "🚀 Iniciar sesión"}
+                </button>
+                {Object.keys(collabRounds).length > 0 && !collabRunning && (
+                  <button onClick={() => { setCollabRounds({}); setCollabSynthesis(""); }}
+                    style={{ padding: "11px 20px", background: "white", color: "#64748b", border: "1px solid #e2e8f0", borderRadius: 10, fontWeight: 600, fontSize: 14, cursor: "pointer" }}>
+                    Limpiar
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* ── Rondas de agentes ── */}
+            {Object.keys(collabRounds).length > 0 && (
+              <div style={{ display: "flex", flexDirection: "column", gap: 16, marginBottom: 24 }}>
+                {collabAgents.filter(id => collabRounds[id]).map(agentId => {
+                  const ag = COLLAB_AGENT_LIST.find(a => a.id === agentId);
+                  const round = collabRounds[agentId];
+                  const c = C[ag?.colorKey || "blue"];
+                  const statusLabel = { waiting: "En espera…", thinking: "Analizando…", streaming: "Respondiendo…", done: "Listo ✓" };
+                  return (
+                    <div key={agentId} style={{ background: "white", borderRadius: 14, border: `2px solid ${round.status === "done" ? c.hex : round.status === "waiting" ? "#e2e8f0" : c.hexBorder}`, overflow: "hidden", transition: "border-color 0.3s" }}>
+                      <div style={{ background: round.status === "done" ? c.hex : "#f8fafc", padding: "12px 18px", display: "flex", alignItems: "center", gap: 10 }}>
+                        <span style={{ fontSize: 20 }}>{ag?.emoji}</span>
+                        <span style={{ fontWeight: 700, fontSize: 14, color: round.status === "done" ? "white" : "#1e293b" }}>{ag?.name || agentId}</span>
+                        <span style={{ marginLeft: "auto", fontSize: 12, color: round.status === "done" ? "rgba(255,255,255,0.8)" : "#94a3b8", fontWeight: 600 }}>
+                          {round.status === "streaming" && <span style={{ display: "inline-block", width: 8, height: 8, background: c.hex, borderRadius: "50%", marginRight: 6, animation: "pulse 1s infinite" }} />}
+                          {statusLabel[round.status]}
+                        </span>
+                      </div>
+                      {round.text && (
+                        <div style={{ padding: "14px 18px", fontSize: 13, color: "#374151", lineHeight: 1.7, whiteSpace: "pre-wrap", maxHeight: 300, overflowY: "auto" }}>
+                          {round.text}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* ── Síntesis del orquestador ── */}
+            {collabSynthesis && (
+              <div style={{ background: "linear-gradient(135deg,#0f172a,#1e1b4b)", borderRadius: 14, padding: 24, marginBottom: 24, color: "white" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                  <span style={{ fontSize: 22 }}>🧠</span>
+                  <span style={{ fontWeight: 700, fontSize: 15 }}>Síntesis del Orquestador</span>
+                </div>
+                <div style={{ fontSize: 13, lineHeight: 1.8, whiteSpace: "pre-wrap", color: "#e2e8f0" }}>{collabSynthesis}</div>
+              </div>
+            )}
+
+            {/* ── Workspace compartido ── */}
+            <div style={{ background: "white", borderRadius: 16, border: "1px solid #e2e8f0", overflow: "hidden" }}>
+              <div style={{ padding: "14px 20px", borderBottom: "1px solid #f1f5f9", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div style={{ fontWeight: 700, fontSize: 14, color: "#1e293b" }}>📌 Workspace Compartido</div>
+                <div style={{ display: "flex", gap: 8 }}>
+                  <button onClick={fetchWorkspace} style={{ padding: "5px 12px", background: "#f1f5f9", border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer", color: "#64748b", fontWeight: 600 }}>↻ Actualizar</button>
+                  {workspace.length > 0 && <button onClick={clearWorkspace} style={{ padding: "5px 12px", background: "#fef2f2", border: "none", borderRadius: 6, fontSize: 12, cursor: "pointer", color: "#ef4444", fontWeight: 600 }}>Limpiar</button>}
+                </div>
+              </div>
+              {workspace.length === 0 ? (
+                <div style={{ padding: 32, textAlign: "center", color: "#94a3b8", fontSize: 13 }}>
+                  El workspace está vacío. Los agentes publicarán notas aquí durante las sesiones colaborativas.
+                </div>
+              ) : (
+                <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 10, maxHeight: 400, overflowY: "auto" }}>
+                  {[...workspace].reverse().map((entry, i) => {
+                    const agCfg = COLLAB_AGENT_LIST.find(a => a.id === entry.agent);
+                    const c = C[agCfg?.colorKey || "blue"];
+                    return (
+                      <div key={entry.id ?? i} style={{ display: "flex", gap: 12, padding: "10px 14px", background: c.hexLight, borderRadius: 10, border: `1px solid ${c.hexBorder}` }}>
+                        <span style={{ fontSize: 18, flexShrink: 0 }}>{agCfg?.emoji || "🤖"}</span>
+                        <div style={{ flex: 1 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                            <span style={{ fontWeight: 700, fontSize: 12, color: c.hex }}>{entry.agentName}</span>
+                            <span style={{ fontSize: 11, color: "#94a3b8" }}>·</span>
+                            <span style={{ fontSize: 11, background: c.hexBorder, color: c.hex, padding: "1px 7px", borderRadius: 20, fontWeight: 600 }}>{entry.topic}</span>
+                            <span style={{ fontSize: 11, color: "#94a3b8", marginLeft: "auto" }}>{entry.timestamp ? new Date(entry.timestamp).toLocaleTimeString("es-MX") : ""}</span>
+                          </div>
+                          <p style={{ fontSize: 13, color: "#374151", margin: 0, lineHeight: 1.5 }}>{entry.content}</p>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -1883,26 +2813,79 @@ export default function App() {
 
         {/* ══════════════════ TAB: OFICINA 3D ══════════════════ */}
         {tab === "oficina" && (
-          <div>
-            <p style={{ textAlign: "center", color: "#94a3b8", fontSize: 13, marginBottom: 16 }}>
-              Vista isométrica de la oficina — haz clic en un escritorio para ver el brief del agente.
-            </p>
-            <div style={{ background: "white", borderRadius: 16, border: "1px solid #e2e8f0", overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.06)" }}>
-              <Office3D agents={AGENTS} pulse={pulse} onSelectAgent={selectAgent} selected={selected} />
+          <div style={{ display: "flex", flexDirection: "column", gap: 28 }}>
+
+            {/* ── Escena 3D interactiva ── */}
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                <span style={{ fontSize: 22 }}>🏢</span>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: 16, color: "#1e293b" }}>Oficina Virtual — Tiempo Real</div>
+                  <div style={{ fontSize: 12, color: "#64748b" }}>Haz clic en un agente para ver su brief · Arrastra para rotar</div>
+                </div>
+              </div>
+              <Office3D
+                agents={allSpecialists.concat([orchestrator])}
+                pulse={pulse}
+                onSelectAgent={selectAgent}
+                selected={selected}
+              />
             </div>
-            <div style={{ marginTop: 12, display: "flex", gap: 20, justifyContent: "center", flexWrap: "wrap" }}>
-              {AGENTS.map(a => {
-                const scfg = STATUS_CFG[a.status];
-                return (
-                  <div key={a.id} style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                    <span style={{ width: 9, height: 9, borderRadius: "50%", background: scfg.dot, display: "inline-block" }} />
-                    <span style={{ fontSize: 12, color: "#475569" }}>{a.emoji} {a.name}</span>
-                    <span style={{ fontSize: 11, color: scfg.text, fontWeight: 600 }}>· {scfg.label}</span>
-                  </div>
-                );
-              })}
+
+            {/* ── weAPES Office ── */}
+            {(company === "all" || company === "weapes") && (
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                <span style={{ fontSize: 22 }}>🏃</span>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: 16, color: "#1e293b" }}>weAPES Parkour Center</div>
+                  <div style={{ fontSize: 12, color: "#64748b" }}>Gym PM · Diseño Parkour · Finanzas · Procesos</div>
+                </div>
+                <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
+                  {AGENTS.filter(a => a.company === "weapes").map(a => (
+                    <span key={a.id} style={{ fontSize: 13, background: "#f0fdf4", border: "1px solid #86efac", borderRadius: 20, padding: "3px 10px", color: "#16a34a", fontWeight: 600 }}>
+                      {a.emoji}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <OfficePanel
+                endpoint="/api/blender/office/weapes"
+                title="🏃 Oficina weAPES"
+                subtitle="Industrial · Parkour · Concreto"
+                accentColor="#16a34a"
+                bgGradient="linear-gradient(135deg,#0d1f15 0%,#142d1e 50%,#0f1a2e 100%)"
+              />
             </div>
-            {selected && <BriefPanel agent={selected} onClose={() => setSelected(null)} />}
+            )}
+
+            {/* ── Woodspa Office ── */}
+            {(company === "all" || company === "woodspa") && (
+            <div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 12 }}>
+                <span style={{ fontSize: 22 }}>🪑</span>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: 16, color: "#1e293b" }}>Woodspa — Muebles & Diseño</div>
+                  <div style={{ fontSize: 12, color: "#64748b" }}>CEO/Ventas · Diseño Clínicas</div>
+                </div>
+                <div style={{ marginLeft: "auto", display: "flex", gap: 6 }}>
+                  {AGENTS.filter(a => a.company === "woodspa").map(a => (
+                    <span key={a.id} style={{ fontSize: 13, background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: 20, padding: "3px 10px", color: "#d97706", fontWeight: 600 }}>
+                      {a.emoji}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <OfficePanel
+                endpoint="/api/blender/office/woodspa"
+                title="🪑 Oficina Woodspa"
+                subtitle="Clínico · Madera · Minimalista"
+                accentColor="#d97706"
+                bgGradient="linear-gradient(135deg,#1a1205 0%,#2d200a 50%,#1a1510 100%)"
+              />
+            </div>
+            )}
+
           </div>
         )}
 
