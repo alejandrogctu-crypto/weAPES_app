@@ -949,314 +949,404 @@ function VentasChibi({ position, color, name, status, uid, pulse, selected, onCl
   );
 }
 
-// ── PrimateChar — agentes weAPES como primates animados estilo cartoon ──
+// ── PrimateChar — agentes weAPES, estilo cartoon Disney/Cartoon Network ──
 function ChibiChar({ position, color, name, status, uid, pulse, selected, onClick }) {
-  const groupRef  = useRef();
-  const tailRef   = useRef();
-  const scfg      = STATUS_CFG[status];
-  const isActive  = status === "working" || status === "alerta";
+  const groupRef = useRef();
+  const tailRef  = useRef();
+  const armLRef  = useRef();
+  const armRRef  = useRef();
+  const scfg     = STATUS_CFG[status];
+  const isActive = status === "working" || status === "alerta";
+  const phase    = uid.charCodeAt(0) * 0.38;
 
-  // Especie y paleta por agente
+  // Paleta y morfología por especie
   const SPECIES = {
-    orchestrator:  { fur: "#ccc4b0", face: "#e8e2d4", belly: "#ddd6c4", eyeColor: "#3a2800", species: "langur_elder" },
-    gym:           { fur: "#7b3d18", face: "#d4855a", belly: "#e8a87a", eyeColor: "#1a0800", species: "capuchin"     },
-    finanzas:      { fur: "#d4880a", face: "#4a82c8", belly: "#e8a430", eyeColor: "#0a1840", species: "snubnose"     },
-    procesos:      { fur: "#7a8a94", face: "#a8b8c4", belly: "#b8c8d4", eyeColor: "#1a2830", species: "langur_gray"  },
-    parkourDesign: { fur: "#8a3a14", face: "#c87050", belly: "#d4906a", eyeColor: "#180800", species: "spider"       },
+    orchestrator:  { fur:"#b8b09a", face:"#ddd6c0", belly:"#ccc4ac", dark:"#6a6250", eyeC:"#28180a", earSize:0.13 },
+    gym:           { fur:"#5e2c0e", face:"#c07040", belly:"#d88858", dark:"#3a1808", eyeC:"#120400", earSize:0.12 },
+    finanzas:      { fur:"#c07808", face:"#2e68c0", belly:"#d89010", dark:"#784800", eyeC:"#060e28", earSize:0.115 },
+    procesos:      { fur:"#606e78", face:"#8ca0ac", belly:"#9ab4c0", dark:"#384048", eyeC:"#101820", earSize:0.14 },
+    parkourDesign: { fur:"#6e2c0c", face:"#b05030", belly:"#c07048", dark:"#3e1606", eyeC:"#0e0200", earSize:0.11 },
   };
   const p = SPECIES[uid] || SPECIES.gym;
-  const dark = hexShade(p.fur, 0.68);
+  // Spider monkey tiene extremidades más largas
+  const isSpider = uid === "parkourDesign";
+  const armLen = isSpider ? 0.58 : 0.48;
+  const legLen = isSpider ? 0.44 : 0.38;
 
   useFrame((state) => {
     if (!groupRef.current) return;
     const t = state.clock.elapsedTime;
-    const phase = uid.charCodeAt(0) * 0.4;
-    if (isActive && pulse) {
-      groupRef.current.position.y = position[1] + Math.sin(t * 2.8 + phase) * 0.08 + 0.04;
-    } else {
-      groupRef.current.position.y = position[1] + Math.sin(t * 0.9 + phase) * 0.020;
-    }
-    // Cola: oscilación suave
+    // Cuerpo: idle sway o bounce activo
+    groupRef.current.position.y = isActive && pulse
+      ? position[1] + Math.sin(t * 2.8 + phase) * 0.09 + 0.05
+      : position[1] + Math.sin(t * 0.85 + phase) * 0.022;
+    // Cola: barrido lateral + arco vertical
     if (tailRef.current) {
-      tailRef.current.rotation.z = Math.sin(t * 1.4 + phase) * 0.22 + 0.4;
+      tailRef.current.rotation.y = Math.sin(t * 1.6 + phase) * 0.35;
+      tailRef.current.rotation.z = Math.sin(t * 0.9 + phase) * 0.18 + 0.45;
     }
+    // Brazos: balanceo asimétrico
+    if (armLRef.current) armLRef.current.rotation.z =  Math.sin(t * 1.0 + phase) * 0.08 + 0.44;
+    if (armRRef.current) armRRef.current.rotation.z = -Math.sin(t * 1.0 + phase + 0.6) * 0.08 - 0.44;
   });
 
   return (
     <group ref={groupRef} position={position} onClick={onClick}>
 
       {/* Status orb */}
-      <mesh position={[0.46, 2.05, 0.1]}>
-        <sphereGeometry args={[0.065, 8, 8]} />
-        <meshStandardMaterial color={scfg.dot} emissive={scfg.dot} emissiveIntensity={isActive ? 1.3 : 0.4} />
+      <mesh position={[0.48, 2.12, 0.1]}>
+        <sphereGeometry args={[0.062, 8, 8]} />
+        <meshStandardMaterial color={scfg.dot} emissive={scfg.dot} emissiveIntensity={isActive ? 1.4 : 0.4} />
       </mesh>
 
-      {/* ── COLA — curva hacia arriba y atrás ── */}
-      <group ref={tailRef} position={[0, 0.62, -0.18]}>
-        {[0,1,2,3,4,5].map((i) => {
-          const angle = (i / 5) * Math.PI * 0.85;
-          const r = 0.38 + i * 0.04;
-          const tx = 0;
-          const ty = Math.sin(angle) * r;
-          const tz = -Math.cos(angle) * r * 0.7;
-          const sz = 0.075 - i * 0.010;
+      {/* ── COLA — arco con wave lateral ── */}
+      <group ref={tailRef} position={[0.05, 0.70, -0.22]}>
+        {Array.from({length: 8}, (_, i) => {
+          const a = (i / 7) * Math.PI * 1.05;
+          const rad = 0.30 + i * 0.055;
+          const sz  = Math.max(0.072 - i * 0.008, 0.022);
           return (
-            <mesh key={i} position={[tx, ty, tz]}>
-              <sphereGeometry args={[Math.max(sz, 0.025), 8, 6]} />
-              <meshStandardMaterial color={i > 3 ? p.belly : p.fur} roughness={0.65} />
+            <mesh key={i} position={[Math.sin(a * 0.4) * 0.08, Math.sin(a) * rad, -Math.cos(a) * rad * 0.75]}>
+              <sphereGeometry args={[sz, 8, 6]} />
+              <meshStandardMaterial color={i > 5 ? p.belly : p.fur} roughness={0.66} />
             </mesh>
           );
         })}
       </group>
 
-      {/* ── PIES ── */}
+      {/* ── PIES — alargados, forma de pie primate ── */}
       {[-1, 1].map((s) => (
-        <mesh key={s} position={[s * 0.15, 0.06, 0.10]} castShadow>
-          <sphereGeometry args={[0.13, 10, 8]} />
-          <meshStandardMaterial color={dark} roughness={0.7} />
-        </mesh>
-      ))}
-
-      {/* ── PIERNAS ── */}
-      {[-1, 1].map((s) => (
-        <mesh key={s} position={[s * 0.14, 0.30, 0.04]} castShadow>
-          <cylinderGeometry args={[0.095, 0.095, 0.38, 10]} />
-          <meshStandardMaterial color={p.fur} roughness={0.65} />
-        </mesh>
-      ))}
-
-      {/* ── TORSO ── */}
-      <mesh position={[0, 0.72, 0]} castShadow>
-        <sphereGeometry args={[0.30, 14, 12]} />
-        <meshStandardMaterial color={p.fur} roughness={0.65} />
-      </mesh>
-      {/* Barriga más clara */}
-      <mesh position={[0, 0.68, 0.22]}>
-        <sphereGeometry args={[0.22, 12, 10]} />
-        <meshStandardMaterial color={p.belly} roughness={0.6} />
-      </mesh>
-
-      {/* ── BRAZOS — más largos que chibi humano ── */}
-      {[-1, 1].map((s) => (
-        <group key={s}>
-          {/* Brazo superior */}
-          <mesh position={[s * 0.36, 0.74, 0.04]} rotation={[0.15, 0, s * 0.45]} castShadow>
-            <cylinderGeometry args={[0.082, 0.082, 0.46, 10]} />
-            <meshStandardMaterial color={p.fur} roughness={0.65} />
+        <group key={s} position={[s * 0.15, 0.05, 0]}>
+          <mesh castShadow>
+            <sphereGeometry args={[0.115, 10, 8]} />
+            <meshStandardMaterial color={p.dark} roughness={0.72} />
           </mesh>
-          {/* Mano */}
-          <mesh position={[s * 0.46, 0.48, 0.10]}>
-            <sphereGeometry args={[0.105, 10, 8]} />
-            <meshStandardMaterial color={dark} roughness={0.6} />
+          {/* Dedo gordo del pie — primates ── */}
+          <mesh position={[s * 0.06, 0, 0.10]}>
+            <sphereGeometry args={[0.048, 8, 6]} />
+            <meshStandardMaterial color={p.dark} roughness={0.72} />
           </mesh>
         </group>
       ))}
 
-      {/* ── CABEZA — grande, chibi ── */}
-      <mesh position={[0, 1.35, 0]} castShadow>
-        <sphereGeometry args={[0.38, 16, 14]} />
-        <meshStandardMaterial color={p.fur} roughness={0.65} />
-      </mesh>
-
-      {/* ── DISCO DE CARA — más claro, ligeramente protruyente ── */}
-      <mesh position={[0, 1.28, 0.28]} castShadow>
-        <sphereGeometry args={[0.265, 14, 12]} />
-        <meshStandardMaterial color={p.face} roughness={0.60} />
-      </mesh>
-
-      {/* ── HOCICO — pequeña protuberancia ── */}
-      <mesh position={[0, 1.20, 0.36]}>
-        <sphereGeometry args={[0.10, 10, 8]} />
-        <meshStandardMaterial color={p.face} roughness={0.58} />
-      </mesh>
-      {/* Nariz */}
-      <mesh position={[0, 1.24, 0.42]}>
-        <sphereGeometry args={[0.035, 8, 6]} />
-        <meshStandardMaterial color={dark} roughness={0.5} />
-      </mesh>
-
-      {/* ── OREJAS ── */}
+      {/* ── PIERNAS — dos segmentos, ligera flexión ── */}
       {[-1, 1].map((s) => (
-        <group key={s} position={[s * 0.37, 1.38, 0.04]}>
-          <mesh castShadow>
-            <sphereGeometry args={[0.115, 10, 8]} />
+        <group key={s} position={[s * 0.13, 0, 0]}>
+          {/* Muslo */}
+          <mesh position={[0, legLen * 0.62 + 0.08, 0.02]} rotation={[0.14, 0, 0]} castShadow>
+            <cylinderGeometry args={[0.095, 0.085, legLen * 0.55, 10]} />
+            <meshStandardMaterial color={p.fur} roughness={0.66} />
+          </mesh>
+          {/* Rodilla */}
+          <mesh position={[0, legLen * 0.32 + 0.08, 0.04]}>
+            <sphereGeometry args={[0.088, 8, 6]} />
+            <meshStandardMaterial color={p.dark} roughness={0.68} />
+          </mesh>
+          {/* Pantorrilla */}
+          <mesh position={[0, legLen * 0.14 + 0.06, 0.01]} rotation={[-0.10, 0, 0]} castShadow>
+            <cylinderGeometry args={[0.082, 0.072, legLen * 0.42, 10]} />
+            <meshStandardMaterial color={p.fur} roughness={0.66} />
+          </mesh>
+        </group>
+      ))}
+
+      {/* ── TORSO — barril ovalado, panza prominente ── */}
+      <group position={[0, 0.74, 0]} scale={[1.06, 1.0, 0.88]}>
+        <mesh castShadow>
+          <sphereGeometry args={[0.295, 14, 12]} />
+          <meshStandardMaterial color={p.fur} roughness={0.65} />
+        </mesh>
+      </group>
+      {/* Panza más clara, ligeramente hacia adelante */}
+      <group position={[0, 0.70, 0.14]} scale={[0.88, 1.0, 0.60]}>
+        <mesh>
+          <sphereGeometry args={[0.235, 12, 10]} />
+          <meshStandardMaterial color={p.belly} roughness={0.60} />
+        </mesh>
+      </group>
+
+      {/* ── BRAZOS — two-segment con articulación ── */}
+      {[[-1, armLRef], [1, armRRef]].map(([s, ref]) => (
+        <group key={s} ref={ref} position={[s * 0.30, 0.90, 0]}>
+          {/* Upper arm */}
+          <mesh position={[s * 0.10, -0.14, 0.02]} rotation={[0.12, 0, s * 0.44]} castShadow>
+            <cylinderGeometry args={[0.082, 0.076, armLen * 0.50, 10]} />
             <meshStandardMaterial color={p.fur} roughness={0.65} />
           </mesh>
-          {/* Interior oreja */}
-          <mesh position={[s * 0.04, 0, 0.06]}>
-            <sphereGeometry args={[0.068, 8, 6]} />
+          {/* Codo */}
+          <mesh position={[s * 0.22, -0.30, 0.04]}>
+            <sphereGeometry args={[0.075, 8, 6]} />
+            <meshStandardMaterial color={p.dark} roughness={0.68} />
+          </mesh>
+          {/* Antebrazo */}
+          <mesh position={[s * 0.28, -0.48, 0.07]} rotation={[0.20, 0, s * 0.55]} castShadow>
+            <cylinderGeometry args={[0.072, 0.060, armLen * 0.44, 10]} />
+            <meshStandardMaterial color={p.fur} roughness={0.65} />
+          </mesh>
+          {/* Mano */}
+          <mesh position={[s * 0.38, -0.65, 0.12]}>
+            <sphereGeometry args={[0.10, 10, 8]} />
+            <meshStandardMaterial color={p.dark} roughness={0.62} />
+          </mesh>
+        </group>
+      ))}
+
+      {/* ── CABEZA — grande y redondeada, ratio chibi ── */}
+      <mesh position={[0, 1.38, 0]} castShadow>
+        <sphereGeometry args={[0.40, 16, 14]} />
+        <meshStandardMaterial color={p.fur} roughness={0.64} />
+      </mesh>
+
+      {/* ── DISCO FACIAL — óvalo más amplio y definido ── */}
+      <group position={[0, 1.30, 0.22]} scale={[1.0, 1.15, 0.55]}>
+        <mesh castShadow>
+          <sphereGeometry args={[0.290, 14, 12]} />
+          <meshStandardMaterial color={p.face} roughness={0.58} />
+        </mesh>
+      </group>
+
+      {/* ── HOCICO — dos esferas superpuestas ── */}
+      <group position={[0, 1.22, 0.36]}>
+        {/* Mandíbula superior */}
+        <mesh>
+          <sphereGeometry args={[0.108, 10, 8]} />
+          <meshStandardMaterial color={p.face} roughness={0.57} />
+        </mesh>
+        {/* Labio inferior / mandíbula */}
+        <mesh position={[0, -0.05, 0.02]}>
+          <sphereGeometry args={[0.088, 8, 6]} />
+          <meshStandardMaterial color={p.face} roughness={0.57} />
+        </mesh>
+        {/* Nariz */}
+        <mesh position={[0, 0.055, 0.08]}>
+          <sphereGeometry args={[0.036, 8, 6]} />
+          <meshStandardMaterial color={p.dark} roughness={0.50} />
+        </mesh>
+        {/* Fosas nasales */}
+        {[-0.022, 0.022].map((nx, ni) => (
+          <mesh key={ni} position={[nx, 0.048, 0.106]}>
+            <sphereGeometry args={[0.014, 6, 5]} />
+            <meshStandardMaterial color={p.dark} roughness={0.45} />
+          </mesh>
+        ))}
+      </group>
+
+      {/* ── BOCA — sonrisa curvada más visible ── */}
+      <mesh position={[0, 1.16, 0.40]} rotation={[0.12, 0, 0]}>
+        <torusGeometry args={[0.058, 0.016, 6, 16, Math.PI]} />
+        <meshStandardMaterial color={p.dark} roughness={0.50} />
+      </mesh>
+
+      {/* ── OREJAS — tamaño por especie ── */}
+      {[-1, 1].map((s) => (
+        <group key={s} position={[s * 0.38, 1.40, 0.02]}>
+          <mesh castShadow>
+            <sphereGeometry args={[p.earSize, 10, 8]} />
+            <meshStandardMaterial color={p.fur} roughness={0.65} />
+          </mesh>
+          <mesh position={[s * 0.042, 0, 0.064]}>
+            <sphereGeometry args={[p.earSize * 0.60, 8, 6]} />
             <meshStandardMaterial color={p.face} roughness={0.55} />
           </mesh>
         </group>
       ))}
 
-      {/* ── OJOS chibi grandes ── */}
-      {[[-0.13, 1.38, 0.37], [0.13, 1.38, 0.37]].map(([ex, ey, ez], i) => (
+      {/* ── OJOS chibi — esclerótica grande + iris + pupila + 2 brillos ── */}
+      {[[-0.145, 1.42, 0.36], [0.145, 1.42, 0.36]].map(([ex, ey, ez], i) => (
         <group key={i}>
-          {/* Blanco ojo */}
+          {/* Esclerótica */}
           <mesh position={[ex, ey, ez]}>
-            <sphereGeometry args={[0.092, 10, 8]} />
+            <sphereGeometry args={[0.098, 10, 8]} />
             <meshStandardMaterial color="white" />
           </mesh>
-          {/* Iris */}
-          <mesh position={[ex + (i === 0 ? 0.014 : -0.014), ey - 0.006, ez + 0.066]}>
-            <sphereGeometry args={[0.052, 8, 8]} />
-            <meshStandardMaterial color={p.eyeColor} />
+          {/* Iris oscuro */}
+          <mesh position={[ex + (i===0?0.016:-0.016), ey-0.008, ez+0.072]}>
+            <sphereGeometry args={[0.058, 8, 8]} />
+            <meshStandardMaterial color={p.eyeC} />
           </mesh>
-          {/* Brillo */}
-          <mesh position={[ex + (i === 0 ? 0.028 : -0.018), ey + 0.022, ez + 0.088]}>
-            <sphereGeometry args={[0.018, 6, 6]} />
+          {/* Brillo principal */}
+          <mesh position={[ex + (i===0?0.032:-0.018), ey+0.026, ez+0.094]}>
+            <sphereGeometry args={[0.020, 6, 6]} />
+            <meshStandardMaterial color="white" />
+          </mesh>
+          {/* Brillo secundario pequeño */}
+          <mesh position={[ex + (i===0?0.014:-0.038), ey-0.010, ez+0.096]}>
+            <sphereGeometry args={[0.010, 5, 5]} />
             <meshStandardMaterial color="white" />
           </mesh>
         </group>
       ))}
 
-      {/* ── SONRISA / BOCA ── */}
-      <mesh position={[0, 1.17, 0.39]} rotation={[0.1, 0, 0]}>
-        <torusGeometry args={[0.055, 0.014, 6, 14, Math.PI]} />
-        <meshStandardMaterial color={dark} />
-      </mesh>
+      {/* ══ ACCESORIOS POR ESPECIE ══════════════════════════════════════════════ */}
 
-      {/* ══ ACCESORIOS POR ESPECIE ══ */}
-
-      {/* ORCHESTRATOR — langur anciano: mechón blanco + bastón sabio */}
-      {uid === "orchestrator" && (
-        <>
-          {/* Pelo blanco distintivo */}
-          <mesh position={[0, 1.65, 0.04]} castShadow>
-            <sphereGeometry args={[0.26, 12, 8]} />
-            <meshStandardMaterial color="#f0ece4" roughness={0.7} />
+      {/* ORCHESTRATOR — Langur plateado: melena blanca + corona */}
+      {uid === "orchestrator" && (<>
+        {/* Melena lateral derecha */}
+        {[[0.28,1.60,0.10,0.16],[0.34,1.46,0.04,0.12],[0.26,1.32,-0.04,0.10]].map(([mx,my,mz,mr],i)=>(
+          <mesh key={i} position={[mx,my,mz]}>
+            <sphereGeometry args={[mr,8,6]} />
+            <meshStandardMaterial color="#e8e4d8" roughness={0.72} />
           </mesh>
-          <mesh position={[0.18, 1.72, 0.10]} rotation={[0.3, 0.3, 0]}>
-            <sphereGeometry args={[0.13, 8, 6]} />
-            <meshStandardMaterial color="#e8e4dc" roughness={0.7} />
+        ))}
+        {/* Melena lateral izquierda */}
+        {[[-0.28,1.60,0.10,0.16],[-0.34,1.46,0.04,0.12],[-0.26,1.32,-0.04,0.10]].map(([mx,my,mz,mr],i)=>(
+          <mesh key={i} position={[mx,my,mz]}>
+            <sphereGeometry args={[mr,8,6]} />
+            <meshStandardMaterial color="#e8e4d8" roughness={0.72} />
           </mesh>
-          <mesh position={[-0.16, 1.70, 0.08]} rotation={[0.3, -0.3, 0]}>
-            <sphereGeometry args={[0.11, 8, 6]} />
-            <meshStandardMaterial color="#e8e4dc" roughness={0.7} />
+        ))}
+        {/* Copete blanco central */}
+        <mesh position={[0,1.76,0.08]} castShadow>
+          <sphereGeometry args={[0.22,10,8]} />
+          <meshStandardMaterial color="#f0ece4" roughness={0.70} />
+        </mesh>
+        {/* Corona dorada */}
+        <group position={[0,1.79,0]}>
+          <mesh>
+            <cylinderGeometry args={[0.21,0.18,0.08,16]} />
+            <meshStandardMaterial color="#fbbf24" metalness={0.82} roughness={0.12} />
           </mesh>
-          {/* Corona dorada — símbolo de autoridad */}
-          <group position={[0, 1.75, 0]}>
-            <mesh>
-              <cylinderGeometry args={[0.22, 0.19, 0.09, 16]} />
-              <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.15} />
-            </mesh>
-            {[0, 72, 144, 216, 288].map((deg, i) => (
-              <mesh key={i} position={[Math.cos(deg * Math.PI/180)*0.18, 0.12, Math.sin(deg * Math.PI/180)*0.18]}>
-                <coneGeometry args={[0.048, 0.17, 6]} />
-                <meshStandardMaterial color="#fbbf24" metalness={0.8} roughness={0.15} />
-              </mesh>
-            ))}
-          </group>
-        </>
-      )}
-
-      {/* GYM — capuchino joven: headband rojo + franja facial blanca */}
-      {uid === "gym" && (
-        <>
-          {/* Franja facial más clara — característica del capuchino */}
-          <mesh position={[0, 1.52, 0.14]}>
-            <sphereGeometry args={[0.20, 10, 8]} />
-            <meshStandardMaterial color="#e8c8a8" roughness={0.6} />
-          </mesh>
-          {/* Headband rojo weAPES */}
-          <mesh position={[0, 1.58, 0.08]} rotation={[0.15, 0, 0]}>
-            <torusGeometry args={[0.35, 0.048, 8, 32]} />
-            <meshStandardMaterial color="#ea5653" roughness={0.5} />
-          </mesh>
-          {/* Knot del headband */}
-          <mesh position={[0.26, 1.62, 0.24]} rotation={[0.3, 0, 0.4]}>
-            <boxGeometry args={[0.08, 0.06, 0.04]} />
-            <meshStandardMaterial color="#c03030" roughness={0.5} />
-          </mesh>
-        </>
-      )}
-
-      {/* FINANZAS — nariz chata dorado: cara azul distintiva + lentes */}
-      {uid === "finanzas" && (
-        <>
-          {/* Cara azul — característica del golden snub-nosed */}
-          <mesh position={[0, 1.30, 0.30]}>
-            <sphereGeometry args={[0.27, 14, 12]} />
-            <meshStandardMaterial color="#4a82c8" roughness={0.55} />
-          </mesh>
-          {/* Nariz chata característica */}
-          <mesh position={[0, 1.26, 0.43]}>
-            <sphereGeometry args={[0.072, 8, 6]} />
-            <meshStandardMaterial color="#3a72b8" roughness={0.5} />
-          </mesh>
-          {/* Lentes sobre la cara azul */}
-          <group position={[0, 1.35, 0.43]}>
-            {[-0.12, 0.12].map((lx) => (
-              <mesh key={lx} position={[lx, 0, 0]} rotation={[Math.PI/2, 0, 0]}>
-                <torusGeometry args={[0.074, 0.018, 8, 18]} />
-                <meshStandardMaterial color="#d4a800" metalness={0.6} roughness={0.3} />
-              </mesh>
-            ))}
-            <mesh>
-              <boxGeometry args={[0.042, 0.016, 0.010]} />
-              <meshStandardMaterial color="#d4a800" metalness={0.6} roughness={0.3} />
-            </mesh>
-          </group>
-        </>
-      )}
-
-      {/* PROCESOS — langur gris: pelo erizado + casco amarillo */}
-      {uid === "procesos" && (
-        <>
-          {/* Pelo erizado característico langur gris */}
-          {[[-0.08,1.72,0.10],[0.10,1.74,0.06],[-0.20,1.66,0.12],[0.22,1.65,0.08],[0,1.76,-0.04]].map(([hx,hy,hz],i)=>(
-            <mesh key={i} position={[hx,hy,hz]} rotation={[hz*2, 0, hx*3]}>
-              <coneGeometry args={[0.030, 0.14, 5]} />
-              <meshStandardMaterial color="#8a9aaa" roughness={0.7} />
+          {[0,72,144,216,288].map((deg,i)=>(
+            <mesh key={i} position={[Math.cos(deg*Math.PI/180)*0.16,0.11,Math.sin(deg*Math.PI/180)*0.16]}>
+              <coneGeometry args={[0.044,0.16,6]} />
+              <meshStandardMaterial color="#fbbf24" metalness={0.82} roughness={0.12} />
             </mesh>
           ))}
-          {/* Casco duro amarillo */}
-          <group position={[0, 1.68, 0]}>
-            <mesh castShadow>
-              <sphereGeometry args={[0.28, 12, 8, 0, Math.PI*2, 0, Math.PI*0.52]} />
-              <meshStandardMaterial color="#fbbf24" roughness={0.4} />
+          {[0,120,240].map((deg,i)=>(
+            <mesh key={i} position={[Math.cos(deg*Math.PI/180)*0.16,0.06,Math.sin(deg*Math.PI/180)*0.16]}>
+              <sphereGeometry args={[0.032,6,6]} />
+              <meshStandardMaterial color={["#ef4444","#3b82f6","#22c55e"][i]} emissive={["#ef4444","#3b82f6","#22c55e"][i]} emissiveIntensity={0.8} />
             </mesh>
-            <mesh position={[0, -0.02, 0]}>
-              <cylinderGeometry args={[0.32, 0.32, 0.04, 16]} />
-              <meshStandardMaterial color="#f59e0b" roughness={0.4} />
+          ))}
+        </group>
+      </>)}
+
+      {/* GYM — Capuchino: gorra oscura + headband weAPES */}
+      {uid === "gym" && (<>
+        {/* Gorra negra característica del capuchino — tapa la parte alta */}
+        <mesh position={[0,1.64,0.02]} castShadow>
+          <sphereGeometry args={[0.32,12,8,0,Math.PI*2,0,Math.PI*0.48]} />
+          <meshStandardMaterial color="#2a1408" roughness={0.70} />
+        </mesh>
+        {/* Parche blanco frente — capuchino */}
+        <mesh position={[0,1.54,0.22]}>
+          <sphereGeometry args={[0.18,10,8]} />
+          <meshStandardMaterial color="#e8d0b0" roughness={0.62} />
+        </mesh>
+        {/* Headband rojo weAPES */}
+        <mesh position={[0,1.60,0.06]} rotation={[0.14,0,0]}>
+          <torusGeometry args={[0.36,0.046,8,32]} />
+          <meshStandardMaterial color="#ea5653" roughness={0.48} />
+        </mesh>
+        {/* Nudo lateral */}
+        <mesh position={[0.28,1.64,0.22]} rotation={[0.3,0,0.4]}>
+          <boxGeometry args={[0.075,0.055,0.038]} />
+          <meshStandardMaterial color="#c02820" roughness={0.50} />
+        </mesh>
+      </>)}
+
+      {/* FINANZAS — Golden snub-nosed: fur dorado + cara azul intensa + lentes */}
+      {uid === "finanzas" && (<>
+        {/* Cara azul — sobreescribe el disco facial */}
+        <group position={[0,1.30,0.24]} scale={[1.0,1.12,0.52]}>
+          <mesh>
+            <sphereGeometry args={[0.295,14,12]} />
+            <meshStandardMaterial color="#2c5eb8" roughness={0.52} />
+          </mesh>
+        </group>
+        {/* Nariz chata pronunciada — golden snub-nosed */}
+        <mesh position={[0,1.24,0.46]}>
+          <sphereGeometry args={[0.068,8,6]} />
+          <meshStandardMaterial color="#1e4ca0" roughness={0.50} />
+        </mesh>
+        {/* Fosas nasales upturned */}
+        {[-0.025,0.025].map((nx,ni)=>(
+          <mesh key={ni} position={[nx,1.252,0.496]}>
+            <sphereGeometry args={[0.018,6,5]} />
+            <meshStandardMaterial color="#142a70" roughness={0.45} />
+          </mesh>
+        ))}
+        {/* Pelo dorado en lateral */}
+        {[[-0.32,1.58,0.08,0.14],[0.32,1.58,0.08,0.14],[0,1.72,0.02,0.20]].map(([hx,hy,hz,hr],i)=>(
+          <mesh key={i} position={[hx,hy,hz]}>
+            <sphereGeometry args={[hr,10,8]} />
+            <meshStandardMaterial color="#d4880a" roughness={0.65} />
+          </mesh>
+        ))}
+        {/* Lentes dorados */}
+        <group position={[0,1.38,0.46]}>
+          {[-0.12,0.12].map((lx)=>(
+            <mesh key={lx} position={[lx,0,0]} rotation={[Math.PI/2,0,0]}>
+              <torusGeometry args={[0.070,0.016,8,18]} />
+              <meshStandardMaterial color="#d4a800" metalness={0.65} roughness={0.25} />
             </mesh>
-          </group>
-        </>
-      )}
+          ))}
+          <mesh><boxGeometry args={[0.040,0.014,0.009]} /><meshStandardMaterial color="#d4a800" metalness={0.65} roughness={0.25} /></mesh>
+        </group>
+      </>)}
 
-      {/* PARKOURDESIGN — spider monkey: pelo rojizo, brazos extra largos, pluma diseño */}
-      {uid === "parkourDesign" && (
-        <>
-          {/* Cresta roja característica */}
-          <mesh position={[0, 1.70, 0.06]} castShadow>
-            <sphereGeometry args={[0.22, 10, 8]} />
-            <meshStandardMaterial color="#a04020" roughness={0.65} />
+      {/* PROCESOS — Langur gris: pelo plateado erizado + casco de seguridad */}
+      {uid === "procesos" && (<>
+        {/* Mechones grises erizados en corona */}
+        {[[-0.10,1.76,0.08],[ 0.10,1.78,0.06],[-0.22,1.69,0.10],[ 0.22,1.68,0.08],
+          [ 0.00,1.80,-0.02],[-0.14,1.74,-0.06],[ 0.14,1.74,-0.06]].map(([hx,hy,hz],i)=>(
+          <mesh key={i} position={[hx,hy,hz]} rotation={[hz*1.8,0,hx*2.8]}>
+            <coneGeometry args={[0.028,0.15,5]} />
+            <meshStandardMaterial color="#8a9aaa" roughness={0.72} />
           </mesh>
-          <mesh position={[0.06, 1.80, 0.06]} rotation={[0.2, 0, 0.15]}>
-            <sphereGeometry args={[0.13, 8, 6]} />
-            <meshStandardMaterial color="#a04020" roughness={0.65} />
+        ))}
+        {/* Casco amarillo de seguridad */}
+        <group position={[0,1.70,0]}>
+          <mesh castShadow>
+            <sphereGeometry args={[0.30,12,8,0,Math.PI*2,0,Math.PI*0.50]} />
+            <meshStandardMaterial color="#fbbf24" roughness={0.38} />
           </mesh>
-          {/* Pluma / lápiz de diseñador */}
-          <mesh position={[0.48, 0.80, 0.10]} rotation={[0.3, 0, -0.6]}>
-            <cylinderGeometry args={[0.018, 0.018, 0.38, 6]} />
-            <meshStandardMaterial color="#f8f4e8" roughness={0.5} />
+          <mesh position={[0,-0.02,0]}>
+            <cylinderGeometry args={[0.34,0.34,0.04,16]} />
+            <meshStandardMaterial color="#f59e0b" roughness={0.38} />
           </mesh>
-          <mesh position={[0.48, 0.60, 0.12]} rotation={[0.3, 0, -0.6]}>
-            <coneGeometry args={[0.018, 0.06, 6]} />
-            <meshStandardMaterial color="#1a1a1a" />
+          {/* Banda frontal casco */}
+          <mesh position={[0,-0.02,0.32]}>
+            <boxGeometry args={[0.20,0.04,0.02]} />
+            <meshStandardMaterial color="#1e293b" roughness={0.50} />
           </mesh>
-          {/* Marca weAPES en muñeca — brazalete morado */}
-          <mesh position={[-0.47, 0.47, 0.10]} rotation={[0.15, 0, 0.45]}>
-            <torusGeometry args={[0.09, 0.022, 8, 18]} />
-            <meshStandardMaterial color="#9D4EDD" roughness={0.4} />
-          </mesh>
-        </>
-      )}
+        </group>
+      </>)}
 
-      {/* Floating name */}
-      <Text position={[0, 2.18, 0]} fontSize={0.16} color="#1e293b"
-        anchorX="center" anchorY="bottom" outlineWidth={0.012} outlineColor="white">
+      {/* PARKOURDESIGN — Spider monkey: tupé rojizo + lápiz + brazalete morado */}
+      {uid === "parkourDesign" && (<>
+        {/* Cresta/tupé alta */}
+        <mesh position={[0,1.76,0.08]} castShadow>
+          <sphereGeometry args={[0.21,10,8]} />
+          <meshStandardMaterial color="#8c2c0c" roughness={0.65} />
+        </mesh>
+        <mesh position={[0.04,1.88,0.10]} rotation={[0.3,0,0.12]}>
+          <sphereGeometry args={[0.13,8,6]} />
+          <meshStandardMaterial color="#8c2c0c" roughness={0.65} />
+        </mesh>
+        <mesh position={[0,1.96,0.06]} rotation={[0.5,0,0]}>
+          <coneGeometry args={[0.08,0.20,8]} />
+          <meshStandardMaterial color="#7a2208" roughness={0.65} />
+        </mesh>
+        {/* Lápiz en mano derecha */}
+        <mesh position={[0.50,0.22,0.12]} rotation={[0.35,0,-0.58]}>
+          <cylinderGeometry args={[0.016,0.016,0.40,6]} />
+          <meshStandardMaterial color="#f0ead8" roughness={0.50} />
+        </mesh>
+        <mesh position={[0.50,0.02,0.14]} rotation={[0.35,0,-0.58]}>
+          <coneGeometry args={[0.016,0.058,6]} />
+          <meshStandardMaterial color="#181818" />
+        </mesh>
+        {/* Brazalete morado weAPES en muñeca izquierda */}
+        <mesh position={[-0.50,-0.60,0.14]} rotation={[0.18,0,0.52]}>
+          <torusGeometry args={[0.086,0.022,8,18]} />
+          <meshStandardMaterial color="#9D4EDD" roughness={0.38} />
+        </mesh>
+      </>)}
+
+      {/* Nombre flotante */}
+      <Text position={[0,2.24,0]} fontSize={0.155} color="#1e293b"
+        anchorX="center" anchorY="bottom" outlineWidth={0.011} outlineColor="white">
         {name}
       </Text>
 
